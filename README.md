@@ -1,2 +1,2 @@
 # ccm-ctrl
-Control libraries of DUNE DAQ CCM
+appfwk CommandFacility implementation based on DUNE CCM interfaces and libraries
