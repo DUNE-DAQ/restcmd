@@ -7,29 +7,25 @@ include(DAQ)
 daq_setup_environment()
 
 find_package(appfwk REQUIRED)
-#find_package(ccm REQUIRED)
+#find_package(ccm REQUIRED)      RS: ???
+#find_package(pistache REQUIRED) RS: ???
 
 ##############################################################################
 daq_point_build_to( src )
 
-message("DUNE_DAQ_CCM_INC -> " $ENV{DUNE_DAQ_CCM_INC})
-message("DUNE_DAQ_CCM LIB -> " $ENV{DUNE_DAQ_CCM_LIB})
+message("PISTACHE_LIB_DIR -> " $ENV{PISTACHE_LIB_DIR})
+message("PISTACHE_INC_DIR -> " $ENV{PISTACHE_INC_DIR})
 
-string(REPLACE ":" ";" LIBRARY_DIRS $ENV{DUNE_DAQ_CCM_LIB})
-find_library(ccmControl_LIBRARY libccmControl.so PATHS ${LIBRARY_DIRS})
-add_library(ccm-ctrl_restCommandFacility_duneCommandFacility src/RestCommandFacility.cpp)
-target_include_directories (ccm-ctrl_restCommandFacility_duneCommandFacility PUBLIC $ENV{DUNE_DAQ_CCM_INC} $ENV{PISTACHE_INC_DIR})
+add_library(ccm-ctrl_restCommandFacility_duneCommandFacility src/RestCommandFacility.cpp src/RestEndpoint.cpp)
+target_include_directories (ccm-ctrl_restCommandFacility_duneCommandFacility PUBLIC $ENV{PISTACHE_INC_DIR})
 target_link_libraries(ccm-ctrl_restCommandFacility_duneCommandFacility appfwk::appfwk 
-  $ENV{DUNE_DAQ_CCM_LIB}/libccmControl.so 
+  $ENV{PISTACHE_LIB_DIR}/libpistache-0.0.002-git20200802.so
 )
 
 ##############################################################################
 daq_point_build_to( test )
 
-#file(COPY test/driver.json DESTINATION test)
-
 ##############################################################################
 daq_point_build_to( unittest )
 
 daq_install(TARGETS ccm-ctrl_restCommandFacility_duneCommandFacility)
-
