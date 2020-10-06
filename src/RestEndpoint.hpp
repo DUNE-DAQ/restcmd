@@ -22,12 +22,14 @@ class RestEndpoint {
 public: 
   explicit RestEndpoint(const std::string& /*uri*/, uint16_t port,
                         ResultQueue& resultqueue, 
-                        RequestCallback functor) noexcept 
+                        RequestCallback functor,
+                        std::launch launchpol) noexcept 
     : port_{ port }, address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
     , description_{"DUNE DAQ CCM CtrlNode API", "0.1"}
     , callback_results_{ resultqueue }
     , command_callback_{ functor }
+    , launch_policy_{ launchpol }
   { }
 
   void init(size_t threads);
@@ -53,6 +55,7 @@ private:
   // Callback and results
   ResultQueue& callback_results_;
   RequestCallback command_callback_;
+  std::launch launch_policy_;
 
   std::thread server_thread_;
 };

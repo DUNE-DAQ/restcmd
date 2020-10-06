@@ -54,10 +54,9 @@ void RestEndpoint::handleCommand(const Rest::Request& request, Http::ResponseWri
   auto addr = request.address();
   auto headers = request.headers();
   auto ansport = headers.getRaw("x-answer-port"); // RS: FIXME
-  callback_results_.push( std::move(
-    std::async(std::launch::async, command_callback_, 
-      std::move(request.body()), addr.host(), std::stoi(ansport.value())
-    ))
+  auto fut = std::async(launch_policy_, command_callback_, 
+    std::move(request.body()), addr.host(), std::stoi(ansport.value())
   );
+  callback_results_.push(std::move(fut));
   auto res = response.send(Http::Code::Ok, "Command received\n");
 }
