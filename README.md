@@ -1,4 +1,4 @@
-# ccm-ctrl
+# restcmd
 appfwk CommandFacility implementation based on DUNE CCM interfaces and libraries
 
 ## Running the application
