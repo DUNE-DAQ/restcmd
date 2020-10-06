@@ -1,15 +1,15 @@
 /**
- * @file RequestResult.hpp
+ * @file CommandResult.hpp
  *
- * RequestResult is a simple struct to hold the data about the 
+ * CommandResult is a simple struct to hold the data about the 
  * request's success and to whom to respond with the result.
  *
  * This is part of the DUNE DAQ Application Framework, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
-#ifndef RESTCMD_SRC_REQUESTRESULT_HPP_
-#define RESTCMD_SRC_REQUESTRESULT_HPP_
+#ifndef RESTCMD_SRC_COMMANDRESULT_HPP_
+#define RESTCMD_SRC_COMMANDRESULT_HPP_
 
 #include <string>
 
@@ -17,9 +17,9 @@ namespace dune {
 namespace daq {
 namespace ccm { 
 
-struct RequestResult
+struct CommandResult
 {
-  RequestResult(const std::string& cliaddr, int cliport, const std::string& result)
+  CommandResult(const std::string& cliaddr, int cliport, const std::string& result)
     : answer_addr_{cliaddr}, answer_port_(cliport), result_{result}
   {}
   std::string answer_addr_; // caller address
@@ -31,4 +31,4 @@ struct RequestResult
 } // namespace daq
 } // namespace dune
 
-#endif // RESTCMD_SRC_REQUESTRESULT_HPP_
+#endif // RESTCMD_SRC_COMMANDRESULT_HPP_

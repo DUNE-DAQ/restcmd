@@ -10,7 +10,7 @@
 #ifndef RESTCMD_SRC_CALLBACKTYPES_HPP_
 #define RESTCMD_SRC_CALLBACKTYPES_HPP_
 
-#include "RequestResult.hpp"
+#include "CommandResult.hpp"
 
 #include <tbb/concurrent_queue.h>
 
@@ -21,11 +21,11 @@ namespace dune {
 namespace daq {
 namespace ccm { 
 
-// Type for concurrent queue that holds futures of async calls that returns RequestResults
-typedef tbb::concurrent_queue<std::future<RequestResult>> ResultQueue;
+// Type for concurrent queue that holds futures of async calls that returns CommandResults
+typedef tbb::concurrent_queue<std::future<CommandResult>> ResultQueue;
 
 // Request Callback function signature
-typedef std::function<RequestResult(const std::string&, std::string, int)> RequestCallback;
+typedef std::function<CommandResult(const std::string&, std::string, int)> RequestCallback;
 
 } // namespace ccm
 } // namespace daq

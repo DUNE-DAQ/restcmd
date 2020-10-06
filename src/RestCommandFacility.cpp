@@ -50,8 +50,8 @@ struct restCommandFacility : public CommandFacility {
     }
 
     // Command callback
-    dune::daq::ccm::RequestResult commandHandler(const std::string& command, std::string ansaddr, int port) {
-      dune::daq::ccm::RequestResult rr(ansaddr, port, "");
+    dune::daq::ccm::CommandResult commandHandler(const std::string& command, std::string ansaddr, int port) {
+      dune::daq::ccm::CommandResult rr(ansaddr, port, "");
       try {
         manager_ptr_->execute( object_t::parse(command) );
         rr.result_ = "OK";
@@ -64,7 +64,7 @@ struct restCommandFacility : public CommandFacility {
     }
 
     void responseHandler() {
-      std::future<dune::daq::ccm::RequestResult> fut;
+      std::future<dune::daq::ccm::CommandResult> fut;
       while (!global_signal) {
         //ERS_INFO("Queue size: " << result_queue_.unsafe_size());
         if (result_queue_.empty()) {
