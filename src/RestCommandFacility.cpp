@@ -37,9 +37,9 @@ struct restCommandFacility : public CommandFacility {
 
     // Manager, HTTP REST Endpoint and backend resources
     mutable DAQModuleManager* manager_ptr_;
-    mutable std::unique_ptr<ccm::RestEndpoint> rest_endpoint_;
-    ccm::ResultQueue result_queue_;
-    ccm::RequestCallback command_callback_;
+    mutable std::unique_ptr<dune::daq::ccm::RestEndpoint> rest_endpoint_;
+    dune::daq::ccm::ResultQueue result_queue_;
+    dune::daq::ccm::RequestCallback command_callback_;
     std::thread response_handler_;
     std::launch policy_ = std::launch::deferred; 
 
@@ -50,8 +50,8 @@ struct restCommandFacility : public CommandFacility {
     }
 
     // Command callback
-    ccm::RequestResult commandHandler(const std::string& command, std::string ansaddr, int port) {
-      ccm::RequestResult rr(ansaddr, port, "");
+    dune::daq::ccm::RequestResult commandHandler(const std::string& command, std::string ansaddr, int port) {
+      dune::daq::ccm::RequestResult rr(ansaddr, port, "");
       try {
         manager_ptr_->execute( object_t::parse(command) );
         rr.result_ = "OK";
@@ -64,8 +64,9 @@ struct restCommandFacility : public CommandFacility {
     }
 
     void responseHandler() {
-      std::future<ccm::RequestResult> fut;
+      std::future<dune::daq::ccm::RequestResult> fut;
       while (!global_signal) {
+        //ERS_INFO("Queue size: " << result_queue_.unsafe_size());
         if (result_queue_.empty()) {
           std::this_thread::sleep_for(1s);
         } else {
@@ -126,8 +127,8 @@ struct restCommandFacility : public CommandFacility {
 
       // Setup endpoint 
       try {
-        const int port = ccm::ValidPort::portNumber(std::stoi(portstr));
-        rest_endpoint_= std::make_unique<ccm::RestEndpoint>(hostname, port, result_queue_, command_callback_, policy_);
+        const int port = dune::daq::ccm::ValidPort::portNumber(std::stoi(portstr));
+        rest_endpoint_= std::make_unique<dune::daq::ccm::RestEndpoint>(hostname, port, result_queue_, command_callback_, policy_);
         rest_endpoint_->init(1); // 1 thread
       }
       catch (const std::exception& e) {

@@ -11,6 +11,7 @@
 #define RESTCMD_SRC_VALIDPORT_HPP_
 
 #include <string>
+#include <stdexcept>
 
 namespace dune {
 namespace daq {

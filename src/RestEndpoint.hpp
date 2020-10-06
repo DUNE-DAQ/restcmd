@@ -39,7 +39,7 @@ public:
                         std::launch launchpol) noexcept 
     : port_{ port }, address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
-    , description_{"DUNE DAQ CCM CtrlNode API", "0.1"}
+    , description_{ "DUNE DAQ CCM CtrlNode API", "0.1" }
     , callback_results_{ resultqueue }
     , command_callback_{ functor }
     , launch_policy_{ launchpol }
