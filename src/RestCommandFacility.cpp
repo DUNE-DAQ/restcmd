@@ -1,7 +1,13 @@
-/** @file RestCommandFacility.cpp
-
-    @author Roland Sipos - rsipos@cern.ch
+/**
+ * @file RestCommandFacility.cpp
+ *
+ * This is part of the DUNE DAQ Application Framework, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
  */
+#include "ValidPort.hpp"
+#include "CallbackTypes.hpp"
+#include "RestEndpoint.hpp"
 
 #include "appfwk/CommandFacility.hpp"
 #include "appfwk/Issues.hpp"
@@ -9,7 +15,6 @@
 
 #include <cetlib/BasicPluginFactory.h>
 #include <nlohmann/json.hpp>
-
 #include <tbb/concurrent_queue.h>
 
 #include <fstream>
@@ -19,13 +24,9 @@
 #include <chrono>
 #include <functional>
 
-#include "ValidPort.hpp"
-#include "CallbackTypes.hpp"
-#include "RestEndpoint.hpp"
 
 using namespace dunedaq::appfwk;
 using namespace std::literals::chrono_literals;
-namespace ccm = dune::daq::ccm;
 using object_t = nlohmann::json;
 
 // Global signal carrier
@@ -49,7 +50,7 @@ struct restCommandFacility : public CommandFacility {
     }
 
     // Command callback
-    ccm::RequestResult commandHandler(const std::string& command, std::string ansaddr, uint16_t port) {
+    ccm::RequestResult commandHandler(const std::string& command, std::string ansaddr, int port) {
       ccm::RequestResult rr(ansaddr, port, "");
       try {
         manager_ptr_->execute( object_t::parse(command) );
@@ -67,8 +68,7 @@ struct restCommandFacility : public CommandFacility {
       while (!global_signal) {
         if (result_queue_.empty()) {
           std::this_thread::sleep_for(1s);
-        } 
-        else {
+        } else {
           bool success = result_queue_.try_pop(fut);
           if (success) { // fut has content
             fut.wait();
@@ -84,9 +84,18 @@ struct restCommandFacility : public CommandFacility {
     virtual ~restCommandFacility() {
       response_handler_.join();
     }
+    restCommandFacility(const restCommandFacility&) =
+      delete; ///< restCommandFacility is not copy-constructible
+    restCommandFacility& operator=(const restCommandFacility&) =
+      delete; ///< restCommandFacility is not copy-assignable
+    restCommandFacility(restCommandFacility&&) =
+      delete; ///< restCommandFacility is not move-constructible
+    restCommandFacility& operator=(restCommandFacility&&) =
+      delete; ///< restCommandFacility is not move-assignable
+
 
     // CTOR
-    restCommandFacility(std::string uri) : CommandFacility(uri) {
+    explicit restCommandFacility(std::string uri) : CommandFacility(uri) {
       // Setup sighandler
       std::signal(SIGQUIT, restCommandFacility::sigHandler);       
       std::signal(SIGKILL, restCommandFacility::sigHandler);
@@ -117,7 +126,7 @@ struct restCommandFacility : public CommandFacility {
 
       // Setup endpoint 
       try {
-        const uint16_t port = ccm::ValidPort::portNumber(std::stoi(portstr));
+        const int port = ccm::ValidPort::portNumber(std::stoi(portstr));
         rest_endpoint_= std::make_unique<ccm::RestEndpoint>(hostname, port, result_queue_, command_callback_, policy_);
         rest_endpoint_->init(1); // 1 thread
       }

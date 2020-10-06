@@ -1,8 +1,17 @@
-#pragma once
+/**
+ * @file RestEndpoint.hpp
+ *
+ * An HTTP REST Backend implementation based on Pistache
+ * Defines a single route, to send commands.
+ *
+ * This is part of the DUNE DAQ Application Framework, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+#ifndef RESTCMD_SRC_RESTENDPOINT_HPP_ 
+#define RESTCMD_SRC_RESTENDPOINT_HPP_ 
 
-#include <thread>
-#include <chrono>
-#include <future>
+#include "CallbackTypes.hpp"
 
 #include <tbb/concurrent_queue.h>
 
@@ -12,7 +21,11 @@
 #include <pistache/router.h>
 #include <pistache/endpoint.h>
 
-#include "CallbackTypes.hpp"
+#include <thread>
+#include <chrono>
+#include <future>
+#include <memory>
+#include <string>
 
 namespace dune {
 namespace daq {
@@ -20,7 +33,7 @@ namespace ccm {
 
 class RestEndpoint {
 public: 
-  explicit RestEndpoint(const std::string& /*uri*/, uint16_t port,
+  explicit RestEndpoint(const std::string& /*uri*/, int port,
                         ResultQueue& resultqueue, 
                         RequestCallback functor,
                         std::launch launchpol) noexcept 
@@ -60,6 +73,8 @@ private:
   std::thread server_thread_;
 };
 
-}
-}
-}
+} // namespace ccm
+} // namespace daq
+} // namespace dune
+
+#endif // RESTCMD_SRC_RESTENDPOINT_HPP_ 

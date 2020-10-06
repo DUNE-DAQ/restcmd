@@ -1,7 +1,15 @@
+/**
+ * @file RestEndpoint.cpp
+ *
+ * This is part of the DUNE DAQ Application Framework, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+#include "RestEndpoint.hpp"
+
 #include <chrono>
 #include <future>
-
-#include "RestEndpoint.hpp"
+#include <utility>
 
 using namespace dune::daq::ccm;
 using namespace Pistache;

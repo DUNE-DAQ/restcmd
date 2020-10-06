@@ -1,4 +1,15 @@
-#pragma once
+/**
+ * @file RequestResult.hpp
+ *
+ * RequestResult is a simple struct to hold the data about the 
+ * request's success and to whom to respond with the result.
+ *
+ * This is part of the DUNE DAQ Application Framework, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+#ifndef RESTCMD_SRC_REQUESTRESULT_HPP_
+#define RESTCMD_SRC_REQUESTRESULT_HPP_
 
 #include <string>
 
@@ -8,14 +19,16 @@ namespace ccm {
 
 struct RequestResult
 {
-  RequestResult(const std::string& cliaddr, uint16_t cliport, const std::string& result)
+  RequestResult(const std::string& cliaddr, int cliport, const std::string& result)
     : answer_addr_{cliaddr}, answer_port_(cliport), result_{result}
   {}
   std::string answer_addr_; // caller address
-  uint16_t answer_port_;    // caller's requested port to answer
+  int answer_port_;    // caller's requested port to answer
   std::string result_;      // result content
 };
 
-}
-}
-}
+} // namespace ccm
+} // namespace daq
+} // namespace dune
+
+#endif // RESTCMD_SRC_REQUESTRESULT_HPP_
