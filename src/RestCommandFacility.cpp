@@ -63,6 +63,7 @@ struct restCommandFacility : public CommandFacility {
       return rr;
     }
 
+    // Handling command futures and results
     void responseHandler() {
       std::future<dune::daq::ccm::CommandResult> fut;
       while (!global_signal) {
