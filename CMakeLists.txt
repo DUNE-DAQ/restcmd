@@ -7,19 +7,14 @@ include(DAQ)
 daq_setup_environment()
 
 find_package(appfwk REQUIRED)
-#find_package(pistache REQUIRED) RS: ???
+find_package(Pistache REQUIRED)
 
 ##############################################################################
 daq_point_build_to( src )
 
-message("PISTACHE_LIB_DIR -> " $ENV{PISTACHE_LIB_DIR})
-message("PISTACHE_INC_DIR -> " $ENV{PISTACHE_INC_DIR})
-
 add_library(restcmd_restCommandFacility_duneCommandFacility src/RestCommandFacility.cpp src/RestEndpoint.cpp)
-target_include_directories (restcmd_restCommandFacility_duneCommandFacility PUBLIC $ENV{PISTACHE_INC_DIR})
-target_link_libraries(restcmd_restCommandFacility_duneCommandFacility appfwk::appfwk 
-  $ENV{PISTACHE_LIB_DIR}/libpistache-0.0.002-git20200802.so
-)
+target_include_directories (restcmd_restCommandFacility_duneCommandFacility PUBLIC ${Pistache_INCLUDE_DIRS})
+target_link_libraries(restcmd_restCommandFacility_duneCommandFacility appfwk::appfwk)
 
 ##############################################################################
 daq_point_build_to( test )
