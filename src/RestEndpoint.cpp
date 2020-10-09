@@ -65,8 +65,8 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
   if ( ct->mime() != accepted_mime_ ) {
     auto res = response.send(Http::Code::Not_Acceptable, "Not a JSON command\n");
   } else {
-    //auto ansport = headers.getRaw("x-answer-port"); // RS: FIXME
-    command_callback_(request.body());
+    //auto ansport = headers.getRaw("x-answer-port"); // RS: FIXME reply using headers
+    command_callback_(nlohmann::json::parse(request.body())); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
 }

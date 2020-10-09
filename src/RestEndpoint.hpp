@@ -11,7 +11,7 @@
 #ifndef RESTCMD_SRC_RESTENDPOINT_HPP_ 
 #define RESTCMD_SRC_RESTENDPOINT_HPP_ 
 
-#include <tbb/concurrent_queue.h>
+#include <nlohmann/json.hpp>
 
 #include <pistache/http.h>
 #include <pistache/http_header.h>
@@ -32,7 +32,7 @@ namespace restcmd {
 class RestEndpoint {
 public: 
   explicit RestEndpoint(const std::string& /*uri*/, int port,
-                        std::function<void(const std::string&)> functor) noexcept 
+                        std::function<void(const nlohmann::json&)> functor) noexcept 
     : port_{ static_cast<uint16_t>(port) }
     , address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
@@ -63,7 +63,7 @@ private:
   Pistache::Http::Mime::MediaType accepted_mime_;
 
   // Function to call with received POST bodies
-  std::function<void(const std::string&)> command_callback_;
+  std::function<void(const nlohmann::json&)> command_callback_;
 
   // Background server thread
   std::thread server_thread_;
