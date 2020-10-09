@@ -1,5 +1,12 @@
 ## restcmd - HTTP REST backend based cmdlib CommandFacility
 
+### Dependencies
+Until further notice, the Pistache library is needed to build and run this plugin.
+The dependency is available under devevlopment products. Befor building and running, run this:
+
+    export PRODUCTS=/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products_dev:$PRODUCTS
+
+
 ### Building and running examples:
 
 * create a software work area
