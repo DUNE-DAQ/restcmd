@@ -24,7 +24,7 @@ struct RestCommandedObject : public dunedaq::cmdlib::CommandedObject
   std::atomic<bool>& runmarker_;
   std::thread stats_;
 
-  void execute(std::string /*command*/) {
+  void execute(const dunedaq::cmdlib::cmdobj_t& /*command*/) {
     ++counter_;
   }
 

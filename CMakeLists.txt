@@ -9,9 +9,10 @@ daq_setup_environment()
 find_package(cetlib REQUIRED)
 find_package(ers REQUIRED)
 find_package(cmdlib REQUIRED)
+find_package(nlohmann_json REQUIRED)
 find_package(Pistache REQUIRED)
 
-set(RESTCMD_DEPENDENCIES ${CETLIB} ${CETLIB_EXCEPT} ers::ers cmdlib::cmdlib ${Pistache_LIBRARIES}/libpistache-0.0.002-git20200802.so)
+set(RESTCMD_DEPENDENCIES ${CETLIB} ${CETLIB_EXCEPT} ers::ers cmdlib::cmdlib nlohmann_json::nlohmann_json ${Pistache_LIBRARIES}/libpistache-0.0.002-git20200802.so)
 
 ##############################################################################
 daq_point_build_to( src )

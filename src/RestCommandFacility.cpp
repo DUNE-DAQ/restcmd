@@ -11,7 +11,6 @@
 #include "cmdlib/Issues.hpp"
 
 #include <ers/ers.h>
-//#include <folly/Uri.h>
 #include <cetlib/BasicPluginFactory.h>
 #include <tbb/concurrent_queue.h>
 
@@ -105,7 +104,7 @@ private:
     // Manager, HTTP REST Endpoint and backend resources
     mutable std::unique_ptr<RestEndpoint> rest_endpoint_;
 
-    typedef std::function<void(const std::string&)> RequestCallback;
+    typedef std::function<void(const cmdobj_t&)> RequestCallback;
     RequestCallback command_executor_;
 
 };
