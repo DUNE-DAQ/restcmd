@@ -1,4 +1,4 @@
-# restcmd - HTTP REST backend based cmdlib CommandFacility
+## restcmd - HTTP REST backend based cmdlib CommandFacility
 
 ### Building and running examples:
 
