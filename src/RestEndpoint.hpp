@@ -11,8 +11,6 @@
 #ifndef RESTCMD_SRC_RESTENDPOINT_HPP_ 
 #define RESTCMD_SRC_RESTENDPOINT_HPP_ 
 
-#include "CallbackTypes.hpp"
-
 #include <tbb/concurrent_queue.h>
 
 #include <pistache/http.h>
@@ -27,22 +25,18 @@
 #include <memory>
 #include <string>
 
-namespace dune {
-namespace daq {
-namespace ccm {
+namespace dunedaq {
+namespace restcmd {
 
 class RestEndpoint {
 public: 
   explicit RestEndpoint(const std::string& /*uri*/, int port,
-                        ResultQueue& resultqueue, 
-                        RequestCallback functor,
-                        std::launch launchpol) noexcept 
-    : port_{ port }, address_{ Pistache::Ipv4::any(), port_ }
+                        std::function<void(const std::string&)> functor) noexcept 
+    : port_{ static_cast<uint16_t>(port) }
+    , address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
     , description_{ "DUNE DAQ CCM CtrlNode API", "0.1" }
-    , callback_results_{ resultqueue }
     , command_callback_{ functor }
-    , launch_policy_{ launchpol }
   { }
 
   void init(size_t threads);
@@ -56,7 +50,7 @@ private:
   void serveTask(); 
 
   // Routes
-  void handleCommand(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response);
+  void handleRouteCommand(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response);
 
   // REST
   Pistache::Port port_;
@@ -65,16 +59,15 @@ private:
   Pistache::Rest::Description description_;
   Pistache::Rest::Router router_;
 
-  // Callback and results
-  ResultQueue& callback_results_;
-  RequestCallback command_callback_;
-  std::launch launch_policy_;
+  // Function to call with received POST bodies
+  std::function<void(const std::string&)> command_callback_;
 
+  // Background server thread
   std::thread server_thread_;
+
 };
 
-} // namespace ccm
-} // namespace daq
-} // namespace dune
+} // namespace restcmd
+} // namespace dunedaq
 
 #endif // RESTCMD_SRC_RESTENDPOINT_HPP_ 
