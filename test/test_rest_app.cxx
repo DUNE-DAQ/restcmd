@@ -12,10 +12,9 @@
 #include "cmdlib/CommandedObject.hpp"
 #include "rest_commanded_object.hpp"
 
-#include "ers/ers.h"
+#include <ers/ers.h>
 
 #include <string>
-#include <iostream>
 #include <chrono>
 #include <memory>
 

@@ -12,9 +12,8 @@
 
 #include "cmdlib/CommandedObject.hpp"
 
-#include "ers/ers.h"
+#include <ers/ers.h>
 
-#include <iostream>
 #include <stdexcept>
 #include <string>
 
