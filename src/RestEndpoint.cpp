@@ -11,7 +11,7 @@
 #include <future>
 #include <utility>
 
-using namespace dune::daq::ccm;
+using namespace dunedaq::restcmd;
 using namespace Pistache;
 
 void RestEndpoint::init(size_t threads)
@@ -47,7 +47,7 @@ void RestEndpoint::shutdown()
 void RestEndpoint::createRouting()
 {
   using namespace Rest;
-  Routes::Post(router_, "/command", Routes::bind(&RestEndpoint::handleCommand, this));
+  Routes::Post(router_, "/command", Routes::bind(&RestEndpoint::handleRouteCommand, this));
 }
 
 inline void extendHeader(Http::Header::Collection& headers) 
@@ -57,14 +57,11 @@ inline void extendHeader(Http::Header::Collection& headers)
   headers.add<Http::Header::ContentType>(MIME(Text, Plain));
 }
 
-void RestEndpoint::handleCommand(const Rest::Request& request, Http::ResponseWriter response)
+void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::ResponseWriter response)
 {
-  auto addr = request.address();
-  auto headers = request.headers();
-  auto ansport = headers.getRaw("x-answer-port"); // RS: FIXME
-  auto fut = std::async(launch_policy_, command_callback_, 
-    std::move(request.body()), addr.host(), std::stoi(ansport.value())
-  );
-  callback_results_.push(std::move(fut));
+  //auto addr = request.address();
+  //auto headers = request.headers();
+  //auto ansport = headers.getRaw("x-answer-port"); // RS: FIXME
+  command_callback_(request.body());
   auto res = response.send(Http::Code::Ok, "Command received\n");
 }
