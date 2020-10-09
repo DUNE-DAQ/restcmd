@@ -6,7 +6,7 @@
   * see https://github.com/DUNE-DAQ/appfwk/wiki/Compiling-and-running
 * clone this repo
   * `cd <MyTopDir>`
-  * `git clone https://github.com/roland-sipos/restcmd.git`)
+  * `git clone https://github.com/DUNE-DAQ/restcmd.git`)
 * build the software
   * `. ./setup_build_environment`
   * `./build_daq_software.sh --clean --install --pkgname restcmd`
