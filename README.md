@@ -1,5 +1,5 @@
 # restcmd
-appfwk CommandFacility implementation based on DUNE CCM interfaces and libraries
+cmdlib CommandFacility implementation based on Pistache HTTP REST server and client
 
 ## Running the application
     daq_application --commandFacility rest://localhost:12345
