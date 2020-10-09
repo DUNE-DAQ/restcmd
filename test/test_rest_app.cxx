@@ -60,7 +60,7 @@ main(int /*argc*/, char** /*argv[]*/)
   fac = createFacility(std::string("rest://localhost:12345"));
 
   // Add commanded object to facility
-  fac->addCommanded(obj);
+  fac->setCommanded(obj);
 
   // Run until marked
   fac->run(marker);
