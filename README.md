@@ -20,4 +20,10 @@
     daq_application --commandFacility rest://localhost:12345
 
 ## <a name="sendcom"></a> Sending commands
+Example good command:
+
     curl --header "Content-Type: application/json" --header "X-Answer-Port: 12333" --request POST --data @only-conf.json http://localhost:12345/command
+
+The command facility enforces the content type. The following will fail:
+
+    curl --header "Content-Type: application/xml" --header "X-Answer-Port: 12333" --request POST --data @only-conf.json http://epdtdi103:12345/command
