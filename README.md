@@ -2,7 +2,9 @@
 
 ### Dependencies
 Until further notice, the Pistache library is needed to build and run this plugin.
-The dependency is available under devevlopment products. Befor building and running, run this:
+The dependency is available under devevlopment products. After sourcing the setup script, also run this:
+
+    setup pistache v2020_10_07 -q e19:prof
 
     export PRODUCTS=/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products_dev:$PRODUCTS
 
