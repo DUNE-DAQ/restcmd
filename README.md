@@ -6,9 +6,6 @@ The dependency is available under devevlopment products. After sourcing the setu
 
     setup pistache v2020_10_07 -q e19:prof
 
-    export PRODUCTS=/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products_dev:$PRODUCTS
-
-
 ### Building and running examples:
 
 * create a software work area
