@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(restcmd VERSION 0.0.0)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../daq-buildtools/cmake ${CMAKE_MODULE_PATH})
-include(DAQ)
+find_package(daq-buildtools 1.2.1 REQUIRED)
 
 daq_setup_environment()
 
@@ -12,26 +11,26 @@ find_package(cmdlib REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Pistache REQUIRED)
 
-set(RESTCMD_DEPENDENCIES ${CETLIB} ${CETLIB_EXCEPT} ers::ers cmdlib::cmdlib nlohmann_json::nlohmann_json ${Pistache_LIBRARIES}/libpistache-0.0.002-git20200802.so)
+set(RESTCMD_DEPENDENCIES ${CETLIB} ${CETLIB_EXCEPT} ers::ers cmdlib::cmdlib nlohmann_json::nlohmann_json Pistache)
 
 ##############################################################################
-daq_point_build_to( src )
+# Main library
 
-add_library(restcmd_restCommandFacility_duneCommandFacility src/RestCommandFacility.cpp src/RestEndpoint.cpp)
-target_include_directories(restcmd_restCommandFacility_duneCommandFacility PUBLIC ${Pistache_INCLUDE_DIRS})
-
-target_link_libraries(restcmd_restCommandFacility_duneCommandFacility ${RESTCMD_DEPENDENCIES})
+daq_add_library(RestEndpoint.cpp LINK_LIBRARIES ${RESTCMD_DEPENDENCIES})
 
 ##############################################################################
-daq_point_build_to( test )
+# Plugins
 
-add_executable(restcmd_test_rest_app test/test_rest_app.cxx)
-target_link_libraries(restcmd_test_rest_app restcmd_restCommandFacility_duneCommandFacility)
+daq_add_plugin(restCommandFacility duneCommandFacility LINK_LIBRARIES restcmd)
 
 ##############################################################################
-daq_point_build_to( unittest )
+# Integration tests
 
-daq_install(TARGETS 
-  restcmd_restCommandFacility_duneCommandFacility 
-  restcmd_test_rest_app
-)
+daq_add_application(restcmd_test_rest_app test_rest_app.cxx TEST LINK_LIBRARIES restcmd)
+
+##############################################################################
+# No unit tests written
+
+##############################################################################
+
+daq_install()
