@@ -30,6 +30,9 @@ The dependency is available under devevlopment products. Please pay attention to
     * from another terminal, send commands via [curl](#sendcom)
 
 ## Running DAQ applications
+To select this CommandFacility implementation, use the `rest://` prefix for the application's commandFacility parameter as a URI.
+The URI is parsed, and the facility will listen to POST requests on the specified interface and port. 
+
     daq_application --commandFacility rest://localhost:12345
 
 ## <a name="sendcom"></a> Sending commands
@@ -43,4 +46,8 @@ The command facility enforces the content type. The following will fail:
 
 The scripts directory also contains a command sender application based on Python's Requests, that is used on the following way:
 
-    python scripts/send-cmd.py --file <your-config-dir>/init.json
+    python ./scripts/send-cmd.py --file <your-config-dir>/init.json
+
+To see details how to connect to different applications, have a look on the help:
+
+    python ./scripts/send-cmd.py --help
