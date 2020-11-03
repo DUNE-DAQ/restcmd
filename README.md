@@ -41,4 +41,6 @@ The command facility enforces the content type. The following will fail:
 
     curl --header "Content-Type: application/xml" --header "X-Answer-Port: 12333" --request POST --data @only-conf.json http://epdtdi103:12345/command
 
-The scripts directory also contains a command sender application based on Python's Requests.
+The scripts directory also contains a command sender application based on Python's Requests, that is used on the following way:
+
+    python scripts/send-cmd.py --file <your-config-dir>/init.json
