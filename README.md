@@ -25,7 +25,7 @@ The dependency is available under devevlopment products. Please pay attention to
   * `setup pistache v2020_10_07 -q e19:prof`
   * `./build_daq_software.sh --install` 
 * run the demos in another shell
-  * ` cd <your work area>
+  * `cd <your work area>`
   * `. ./setup_runtime_environment`
   * `restcmd_test_rest_app`
     * the application will terminate in 20 seconds
