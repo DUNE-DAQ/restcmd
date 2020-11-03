@@ -17,7 +17,8 @@ The dependency is available under devevlopment products. Please pay attention to
   * see https://github.com/DUNE-DAQ/appfwk/wiki/Compiling-and-running-under-v1.2.1
 * clone this repo into your work/development area
   * `cd <your_work_area>/sourcecode`
-  * `git clone https://github.com/DUNE-DAQ/restcmd.git`)
+  * `git clone https://github.com/DUNE-DAQ/restcmd.git`
+  * `cd ..`
 * build the software
   * `. ./setup_build_environment`
   * `export PRODUCTS=/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products_dev:$PRODUCTS`
