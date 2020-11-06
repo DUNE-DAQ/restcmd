@@ -51,10 +51,9 @@ elif isinstance(cmdstr, list):
         nextcmd = input('Press enter a command to send next: ')
         if nextcmd == "end":
           break
-        print('Command to send: %s' % nextcmd)
         cmdobj = [cdict for cdict in cmdstr if cdict["id"] == nextcmd]
         if not cmdobj:
-          print('Unrecognized command. (Not present int the command list?)')
+          print('Unrecognized command %s. (Not present int the command list?)' % nextcmd)
         else:
           print('Sending %s command.' % nextcmd)
           try: 
