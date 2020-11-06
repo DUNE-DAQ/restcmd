@@ -36,6 +36,7 @@ if isinstance(cmdstr, dict):
     print('Failed to send due to: %s' % sys.exc_info()[0])
 elif isinstance(cmdstr, list):
   print('This is a list of commands.')
+  avacmds = [cdict['id'] for cdict in cmdstr if cdict["id"]]
   if not args.interactive:
     for cmd in cmdstr:
       try:
@@ -48,6 +49,7 @@ elif isinstance(cmdstr, list):
     print('Interactive mode. Type the ID of the next command to send, or type \'end\' to finish.')
     while True:
       try:
+        print('\nAvailable commands: %s' % avacmds)
         nextcmd = input('Press enter a command to send next: ')
         if nextcmd == "end":
           break
