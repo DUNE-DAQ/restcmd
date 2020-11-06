@@ -1,0 +1,40 @@
+{
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "output",
+                                "inst": "hose",
+                                "name": "output"
+                            }
+                        ]
+                    },
+                    "inst": "fdp",
+                    "plugin": "FakeDataProducerDAQModule"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "hose",
+                                "name": "input"
+                            }
+                        ]
+                    },
+                    "inst": "fdc",
+                    "plugin": "FakeDataConsumerDAQModule"
+                }
+            ],
+            "queues": [
+                {
+                    "capacity": 10,
+                    "inst": "hose",
+                    "kind": "StdDeQueue"
+                }
+            ]
+        },
+        "id": "init"
+    }

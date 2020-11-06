@@ -40,26 +40,26 @@ The URI is parsed, and the facility will listen to POST requests on the specifie
 ## <a name="sendcom"></a> Sending commands
 Example of sending only a configuration command:
 
-    cmdfile=sourcecode/restcmd/scripts/init.json
+    cmdfile=sourcecode/restcmd/test/test-init.json
     curl --header "Content-Type: application/json" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://localhost:12345/command
 
 The command facility enforces the content type. The following will fail:
 
-    cmdfile=sourcecode/restcmd/scripts/init.json
+    cmdfile=sourcecode/restcmd/test/test-init.json
     curl --header "Content-Type: application/xml" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://epdtdi103:12345/command
 
-The scripts directory also contains a command sender application based on Python's Requests, that is used on the following way:
+The scripts directory also contains a command sender application based on Python3 and its Requests module. It is used on the following way:
 
-    python ./scripts/send-cmd.py --file <your-config-dir>/init.json
+    python ./sourcecode/restcmd/scripts/send-cmd.py --file ./sourcecode/restcmd/test/test-init.json
 
 The script can recognize multiple command objects in the same file, and send them one by one, with a configurable wait time between each send:
 
-    python ./scripts/send-cmd.py --file ./scripts/fdpc-job.json --wait 3
+    python ./sourcecode/restcmd/scripts/send-cmd.py --file ./sourcecode/restcmd/test/fdpc-commands.json --wait 3
 
 There is also an interactive mode. This requires typing the next command's ID from the file to be sent:
 
-    python ./scripts/send-cmd.py --file ./scripts/fdpc-job.json --interactive 
+    python ./sourcecode/restcmd/scripts/send-cmd.py --file ./sourcecode/restcmd/test/fdpc-commands.json --interactive 
 
 To see details how to connect to different applications, have a look on the help:
 
-    python ./scripts/send-cmd.py --help
+    python ./sourcecode/restcmd/scripts/send-cmd.py --help
