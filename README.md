@@ -38,6 +38,8 @@ The URI is parsed, and the facility will listen to POST requests on the specifie
     daq_application --commandFacility rest://localhost:12345
 
 ## <a name="sendcom"></a> Sending commands
+
+### With CURL
 Example of sending only a configuration command:
 
     cmdfile=sourcecode/restcmd/test/test-init.json
@@ -48,6 +50,8 @@ The command facility enforces the content type. The following will fail:
     cmdfile=sourcecode/restcmd/test/test-init.json
     curl --header "Content-Type: application/xml" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://epdtdi103:12345/command
 
+
+### With send-cmd
 The scripts directory also contains a command sender application based on Python3 and its Requests module. It is used on the following way:
 
     python ./sourcecode/restcmd/scripts/send-cmd.py --file ./sourcecode/restcmd/test/test-init.json
