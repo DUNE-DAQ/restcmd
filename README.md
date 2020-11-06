@@ -54,11 +54,11 @@ The scripts directory also contains a command sender application based on Python
 
 The script can recognize multiple command objects in the same file, and send them one by one, with a configurable wait time between each send:
 
-    python ./sourcecode/restcmd/scripts/send-cmd.py --file ./sourcecode/restcmd/test/fdpc-commands.json --wait 3
+    python ./sourcecode/restcmd/scripts/send-cmd.py --wait 3 --file ./sourcecode/restcmd/test/fdpc-commands.json
 
 There is also an interactive mode. This requires typing the next command's ID from the file to be sent:
 
-    python ./sourcecode/restcmd/scripts/send-cmd.py --file ./sourcecode/restcmd/test/fdpc-commands.json --interactive 
+    python ./sourcecode/restcmd/scripts/send-cmd.py --interactive --file ./sourcecode/restcmd/test/fdpc-commands.json
 
 To see details how to connect to different applications, have a look on the help:
 
