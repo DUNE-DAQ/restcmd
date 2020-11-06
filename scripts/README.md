@@ -10,3 +10,6 @@ One can also specify a wait time between sending commands.
 
     python send-cmd.py --file fdpc-job.json -w 3
 
+## Sending command in interactive mode
+
+    python send-cmd.py --file fdpc-job.json --interactive
