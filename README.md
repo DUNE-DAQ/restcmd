@@ -52,6 +52,10 @@ The scripts directory also contains a command sender application based on Python
 
     python ./scripts/send-cmd.py --file <your-config-dir>/init.json
 
+The script can recognize multiple command objects in the same file, and send them one by one, with a configurable wait time between each send:
+
+    python ./scripts/send-cmd.py --file ./scripts/fdpc-job.json --wait 3
+
 To see details how to connect to different applications, have a look on the help:
 
     python ./scripts/send-cmd.py --help
