@@ -56,6 +56,10 @@ The script can recognize multiple command objects in the same file, and send the
 
     python ./scripts/send-cmd.py --file ./scripts/fdpc-job.json --wait 3
 
+There is also an interactive mode. This requires pressing Enter before sending the next command:
+
+    python ./scripts/send-cmd.py --file ./scripts/fdpc-job.json --interactive 
+
 To see details how to connect to different applications, have a look on the help:
 
     python ./scripts/send-cmd.py --help
