@@ -29,7 +29,7 @@ The dependency is available under devevlopment products. Please pay attention to
   * `. ./setup_runtime_environment`
   * `restcmd_test_rest_app`
     * the application will terminate in 20 seconds
-    * from the first terminal, send commands via [curl](#sendcom)
+    * from the first terminal, send commands via [curl](#sendcurl) or with the more preferred [send-cmd.py](#sendcmd)
 
 ## Running DAQ applications
 To select this CommandFacility implementation, use the `rest://` prefix for the application's commandFacility parameter as a URI.
@@ -37,9 +37,9 @@ The URI is parsed, and the facility will listen to POST requests on the specifie
 
     daq_application --commandFacility rest://localhost:12345
 
-## <a name="sendcom"></a> Sending commands
+## Sending commands
 
-### With CURL
+### <a name="sendcurl"></a> With CURL
 Example of sending only a configuration command:
 
     cmdfile=sourcecode/restcmd/test/test-init.json
@@ -51,7 +51,7 @@ The command facility enforces the content type. The following will fail:
     curl --header "Content-Type: application/xml" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://epdtdi103:12345/command
 
 
-### With send-cmd
+### <a name="sendcmd"></a> With send-cmd
 The scripts directory also contains a command sender application based on Python3 and its Requests module. It is used on the following way:
 
     python ./sourcecode/restcmd/scripts/send-cmd.py --file ./sourcecode/restcmd/test/test-init.json
