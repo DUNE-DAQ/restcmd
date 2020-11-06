@@ -53,7 +53,7 @@ elif isinstance(cmdstr, list):
           break
         cmdobj = [cdict for cdict in cmdstr if cdict["id"] == nextcmd]
         if not cmdobj:
-          print('Unrecognized command %s. (Not present int the command list?)' % nextcmd)
+          print('Unrecognized command %s. (Not present in the command list?)' % nextcmd)
         else:
           print('Sending %s command.' % nextcmd)
           try: 
