@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
-project(restcmd VERSION 0.0.0)
+project(restcmd VERSION 1.0.1)
 
-find_package(daq-buildtools 1.2.1 REQUIRED)
+find_package(daq-cmake REQUIRED)
 
 daq_setup_environment()
 
