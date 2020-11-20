@@ -39,18 +39,6 @@ The URI is parsed, and the facility will listen to POST requests on the specifie
 
 ## Sending commands
 
-### <a name="sendcurl"></a> With CURL
-Example of sending only a configuration command:
-
-    cmdfile=sourcecode/restcmd/test/test-init.json
-    curl --header "Content-Type: application/json" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://localhost:12345/command
-
-The command facility enforces the content type. The following will fail:
-
-    cmdfile=sourcecode/restcmd/test/test-init.json
-    curl --header "Content-Type: application/xml" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://epdtdi103:12345/command
-
-
 ### <a name="sendcmd"></a> With send-cmd
 The scripts directory also contains a command sender application based on Python3 and its Requests module. It is used on the following way:
 
@@ -67,3 +55,16 @@ There is also an interactive mode. This requires typing the next command's ID fr
 To see details how to connect to different applications, have a look on the help:
 
     send-cmd.py --help
+
+### <a name="sendcurl"></a> With CURL
+Sending commands with `curl` makes low-level debugging easier.
+Example of sending only a configuration command:
+
+    cmdfile=sourcecode/restcmd/test/test-init.json
+    curl --header "Content-Type: application/json" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://localhost:12345/command
+
+The command facility enforces the content type. The following will fail:
+
+    cmdfile=sourcecode/restcmd/test/test-init.json
+    curl --header "Content-Type: application/xml" --header "X-Answer-Port: 12333" --request POST --data @$cmdfile http://epdtdi103:12345/command
+
