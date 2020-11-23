@@ -5,8 +5,6 @@ carries. The server answers to HTTP POST requests, where the request body is the
 command itself. The package ships a really lightweight Python script to send commands from the
 JSON files, that is located under the scripts directory.
 
-This package is compatible with DUNE DAQ v1.2.1.
-
 ### Dependencies
 The Pistache library is needed to build and run this plugin. At the moment, it's located under products_dev. 
 The dependency is available under devevlopment products. Please pay attention to the build steps that include how to setup pistache from cvmfs.
