@@ -12,5 +12,6 @@ One can also specify a wait time between sending commands.
     send-restcmd.py --file ../test/fdpc-commands.json --wait 3
 
 ## Sending command in interactive mode
+There is also an interactive mode. This requires typing the next command's ID from the set of commands that are available in the file:
 
     send-restcmd.py --file ../test/fdpc-commands.json --interactive

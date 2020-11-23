@@ -46,7 +46,7 @@ The script can recognize multiple command objects in the same file, and send the
 
     send-restcmd.py --wait 3 --file ./sourcecode/restcmd/test/fdpc-commands.json
 
-There is also an interactive mode. This requires typing the next command's ID from the file to be sent:
+There is also an interactive mode. This requires typing the next command's ID from the set of commands that are available in the file:
 
     send-restcmd.py --interactive --file ./sourcecode/restcmd/test/fdpc-commands.json
 
