@@ -2,7 +2,8 @@
     daq_application --commandFacility rest://localhost:12345
 
 ## Sending a command
-    python send-restcmd.py --file ../test/test-init.json
+
+    send-restcmd.py --file ../test/test-init.json
 
 ## Sending a command sequence
 The script checks if there are multiple command objects to send. (File contains a JSON array of objects.)
