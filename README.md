@@ -29,7 +29,7 @@ The dependency is available under devevlopment products. Please pay attention to
   * `. ./setup_runtime_environment`
   * `restcmd_test_rest_app`
     * the application will terminate in 20 seconds
-    * from the first terminal, send commands via [curl](#sendcurl) or with the more preferred [send-cmd.py](#sendcmd)
+    * from the first terminal, send commands via [curl](#sendcurl) or with the more preferred [send-restcmd.py](#sendcmd)
 
 ## Running DAQ applications
 To select this CommandFacility implementation, use the `rest://` prefix for the application's commandFacility parameter as a URI.
@@ -39,22 +39,22 @@ The URI is parsed, and the facility will listen to POST requests on the specifie
 
 ## Sending commands
 
-### <a name="sendcmd"></a> With send-cmd
+### <a name="sendcmd"></a> With send-restcmd
 The scripts directory also contains a command sender application based on Python3 and its Requests module. It is used on the following way:
 
-    send-cmd.py --file ./sourcecode/restcmd/test/test-init.json
+    send-restcmd.py --file ./sourcecode/restcmd/test/test-init.json
 
 The script can recognize multiple command objects in the same file, and send them one by one, with a configurable wait time between each send:
 
-    send-cmd.py --wait 3 --file ./sourcecode/restcmd/test/fdpc-commands.json
+    send-restcmd.py --wait 3 --file ./sourcecode/restcmd/test/fdpc-commands.json
 
 There is also an interactive mode. This requires typing the next command's ID from the file to be sent:
 
-    send-cmd.py --interactive --file ./sourcecode/restcmd/test/fdpc-commands.json
+    send-restcmd.py --interactive --file ./sourcecode/restcmd/test/fdpc-commands.json
 
 To see details how to connect to different applications, have a look on the help:
 
-    send-cmd.py --help
+    send-restcmd.py --help
 
 ### <a name="sendcurl"></a> With CURL
 Sending commands with `curl` makes low-level debugging easier.
