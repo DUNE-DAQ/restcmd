@@ -1,4 +1,4 @@
-#! python3
+#!/usr/bin/env python3
 
 import argparse
 import requests
@@ -11,7 +11,7 @@ parser.add_argument('--host', type=str, default='localhost', help='target host/e
 parser.add_argument('-p', '--port', type=int, default=12345, help='target port')
 parser.add_argument('-a', '--answer-port', type=int, default=12333, help='answer to service listening on this port')
 parser.add_argument('-r', '--route', type=str, default='command', help='target route on endpoint')
-parser.add_argument('-f', '--file', type=str, help='file that contains command to be posted')
+parser.add_argument('-f', '--file', type=str, required=True, help='file that contains command to be posted') # This should be an argument
 parser.add_argument('-w', '--wait', type=int, default=2, help='seconds to wait between sending commands')
 parser.add_argument('-i', '--interactive', dest='interactive', action='store_true', help='interactive mode')
 parser.add_argument('--non-interactive', dest='interactive', action='store_false')
@@ -24,8 +24,12 @@ print('Target url: ' + url)
 headers = {'content-type': 'application/json', 'x-answer-port': bytes(args.answer_port)}
 
 cmdstr = None
-with open(args.file) as f:
-  cmdstr = json.load(f)
+try:
+  with open(args.file) as f:
+    cmdstr = json.load(f)
+except:
+  print(f"\nERROR: failed to open file '{str(args.file)}'.")
+  raise SystemExit(0)
 
 if isinstance(cmdstr, dict):
   print('This is single command.')
