@@ -18,6 +18,7 @@
 #include <pistache/description.h>
 #include <pistache/router.h>
 #include <pistache/endpoint.h>
+#include <pistache/client.h>
 #include <pistache/mime.h>
 
 #include <thread>
@@ -32,13 +33,14 @@ namespace restcmd {
 class RestEndpoint {
 public: 
   explicit RestEndpoint(const std::string& /*uri*/, int port,
-                        std::function<void(const nlohmann::json&)> functor) noexcept 
+                        std::function<void(const nlohmann::json&)> callback) noexcept 
     : port_{ static_cast<uint16_t>(port) }
     , address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
     , description_{ "DUNE DAQ cmdlib API", "0.1" }
     , accepted_mime_{ MIME(Application, Json) }
-    , command_callback_{ functor }
+    , http_client_{ std::make_shared<Pistache::Http::Client>() }
+    , command_callback_{ callback }
   { }
 
   void init(size_t threads);
@@ -51,8 +53,10 @@ private:
   void createDescription();
   void serveTask(); 
 
-  // Routes
+  // Route handler
   void handleRouteCommand(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response);
+  // Client handler
+  void handleResponseCommand();
 
   // REST
   Pistache::Port port_;
@@ -61,6 +65,11 @@ private:
   Pistache::Rest::Description description_;
   Pistache::Rest::Router router_;
   Pistache::Http::Mime::MediaType accepted_mime_;
+
+  // CLIENT
+  std::shared_ptr<Pistache::Http::Client> http_client_;
+  Pistache::Http::Client::Options http_client_options_;
+  std::vector<Pistache::Async::Promise<Pistache::Http::Response>> http_client_responses_;
 
   // Function to call with received POST bodies
   std::function<void(const nlohmann::json&)> command_callback_;
