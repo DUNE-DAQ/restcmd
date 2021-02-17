@@ -25,6 +25,7 @@ void RestEndpoint::init(size_t threads)
     .maxResponseSize(1048576) // 1MB 
     .flags(Pistache::Tcp::Options::ReuseAddr)
     .flags(Pistache::Tcp::Options::ReusePort);
+    
   http_endpoint_->init(opts);
   createRouting();
   http_client_options_ = Http::Client::options().threads(static_cast<int>(threads));
