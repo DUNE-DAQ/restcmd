@@ -97,10 +97,10 @@ protected:
     
     // Implementation of completionHandler interface
     void completion_callback(cmdmeta_t& meta) {
-      ERS_INFO("Completion result: " << meta.at("result"));
-      ERS_INFO("Completion ansport: " << meta.at("answer-port"));
-      ERS_INFO("Completion command: " << meta.at("command"));
-      rest_endpoint_->handleResponseCommand();
+      // ERS_INFO("Completion result: " << meta.at("result"));
+      // ERS_INFO("Completion ansport: " << meta.at("answer-port"));
+      // ERS_INFO("Completion command: " << meta.at("command"));
+      rest_endpoint_->handleResponseCommand(meta);
     }
 
 private:

@@ -85,22 +85,24 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
     for (const auto&[hk, rh] : headers.rawList()) {
       hdrsstr << hk << ": " << rh.value() << '\n';
     }
-    std::cout << "From: "<< addr.host() << '\n';
-    std::cout << hdrsstr.str() << '\n';
+    // std::cout << "From: "<< addr.host() << '\n';
+    // std::cout << hdrsstr.str() << '\n';
 
     auto ansport = headers.getRaw("X-Answer-Port"); // RS: FIXME reply using headers
-    cmdmeta_t meta{{"command", nlohmann::json::parse(request.body())}};
+    cmdmeta_t meta{{"command", request.body()}};
     meta["answer-port"] = ansport.value();
+    meta["answer-host"] = addr.host();
     command_callback_(meta); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
 }
 
-void RestEndpoint::handleResponseCommand() 
+void RestEndpoint::handleResponseCommand(cmdmeta_t & meta) 
 {
-  // std::cout << "Attempt to send command content: " << content << '\n';
-  std::string content("");
-  auto response = http_client_->post("localhost:12333").body(content).send();
+  std::ostringstream addrstr;
+  addrstr << meta["answer-host"] << ":" << meta["answer-port"];
+  //std::cout << addrstr.str() << std::endl;
+  auto response = http_client_->post(addrstr.str()).body(meta["result"]).send();
   response.then(
     [&](Http::Response response) {
       // ++completed_requests_;
@@ -119,6 +121,6 @@ void RestEndpoint::handleResponseCommand()
       }
     }
   );
-  //responses_.push_back(std::move(response));
+  http_client_responses_.push_back(std::move(response));
 }
 

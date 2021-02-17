@@ -30,7 +30,7 @@
 namespace dunedaq {
 namespace restcmd {
 
-typedef std::map<std::string, nlohmann::json> cmdmeta_t;
+typedef std::map<std::string, std::string> cmdmeta_t;
 
 class RestEndpoint {
 public: 
@@ -51,7 +51,7 @@ public:
   void shutdown();
 
   // Client handler
-  void handleResponseCommand();
+  void handleResponseCommand(cmdmeta_t& meta);
   
 private:
   void createRouting();
