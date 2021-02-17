@@ -107,7 +107,7 @@ private:
     // Manager, HTTP REST Endpoint and backend resources
     mutable std::unique_ptr<RestEndpoint> rest_endpoint_;
 
-    typedef std::function<void(cmdobj_t)> RequestCallback;
+    typedef std::function<void(cmdmeta_t)> RequestCallback;
     RequestCallback command_executor_;
 
 };
