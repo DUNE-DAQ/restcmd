@@ -64,7 +64,7 @@ public:
       }
 
       try { // to setup backend
-        command_executor_ = std::bind(&inherited::executeCommand, this, std::placeholders::_1);
+        command_executor_ = std::bind(&inherited::execute_command, this, std::placeholders::_1);
         rest_endpoint_= std::make_unique<dunedaq::restcmd::RestEndpoint>(hostname, port, command_executor_);
         rest_endpoint_->init(1); // 1 thread
         ERS_INFO("Endpoint open on: " << epname << " host:" << hostname << " port:" << portstr);
@@ -96,7 +96,7 @@ protected:
     typedef CommandFacility inherited;
     
     // Implementation of completionHandler interface
-    void completionCallback(cmdmeta_t& meta) {
+    void completion_callback(cmdmeta_t& meta) {
       ERS_INFO("Completion result: " << meta.at("result"));
       ERS_INFO("Completion ansport: " << meta.at("answer-port"));
       ERS_INFO("Completion command: " << meta.at("command"));
