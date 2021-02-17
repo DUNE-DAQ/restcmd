@@ -87,32 +87,36 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
     }
     std::cout << "From: "<< addr.host() << '\n';
     std::cout << hdrsstr.str() << '\n';
-    //ERS_DEBUG(2, hdrsstr.str()); // what do I need to include for ERS_DEBUG?
 
     auto ansport = headers.getRaw("X-Answer-Port"); // RS: FIXME reply using headers
-    command_callback_(nlohmann::json::parse(request.body())); // RS: FIXME parse errors
+    cmdmeta_t meta{{"command", nlohmann::json::parse(request.body())}};
+    meta["answer-port"] = ansport.value();
+    command_callback_(meta); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
 }
 
 void RestEndpoint::handleResponseCommand() 
 {
-  //std::cout << "Attempt to send command content: " << content << '\n';
+  // std::cout << "Attempt to send command content: " << content << '\n';
   std::string content("");
-  auto response = http_client_->post("localhost").body(content).send();
+  auto response = http_client_->post("localhost:12333").body(content).send();
   response.then(
     [&](Http::Response response) {
-      //++completed_requests_;
-      //std::cout << "Response code = " << response.code() << std::endl;
+      // ++completed_requests_;
+      std::cout << "Response code = " << response.code() << std::endl;
       auto body = response.body();
-      //if (!body.empty())
-        //std::cout << "Response body = " << body << std::endl;
+      if (!body.empty())
+        std::cout << "Response body = " << body << std::endl;
     },
-    [&](std::exception_ptr /*exc*/) {
+    [&](std::exception_ptr exc) {
       // handle response failure
-      //++failed_requests_;
-      //PrintException excPrinter;
-      //excPrinter(exc);
+      try{
+        std::rethrow_exception(exc);
+      }
+      catch (const std::exception &e) {
+        std::cout << "Exception " << e.what() << '\n';
+      }
     }
   );
   //responses_.push_back(std::move(response));
