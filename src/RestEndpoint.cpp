@@ -93,7 +93,7 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
     cmdmeta_t meta;
     meta["answer-port"] = ansport.value();
     meta["answer-host"] = addr.host();
-    command_callback_(nlohmann::json(request.body()), meta); // RS: FIXME parse errors
+    command_callback_(nlohmann::json::parse(request.body()), meta); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
 }
