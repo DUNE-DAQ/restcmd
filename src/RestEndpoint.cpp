@@ -25,7 +25,7 @@ void RestEndpoint::init(size_t threads)
     .maxResponseSize(1048576) // 1MB 
     .flags(Pistache::Tcp::Options::ReuseAddr)
     .flags(Pistache::Tcp::Options::ReusePort);
-    
+
   http_endpoint_->init(opts);
   createRouting();
   http_client_options_ = Http::Client::options().threads(static_cast<int>(threads));
@@ -102,15 +102,15 @@ void RestEndpoint::handleResponseCommand(cmdmeta_t & meta)
 {
   std::ostringstream addrstr;
   addrstr << meta["answer-host"] << ":" << meta["answer-port"];
-  //std::cout << addrstr.str() << std::endl;
-  auto response = http_client_->post(addrstr.str()).body(meta["result"]).send();
+  meta.erase("answer-host");
+  meta.erase("answer-port");
+  auto response = http_client_->post(addrstr.str()).body(nlohmann::json(meta).dump()).send();
   response.then(
     [&](Http::Response response) {
-      // ++completed_requests_;
       std::cout << "Response code = " << response.code() << std::endl;
-      auto body = response.body();
-      if (!body.empty())
-        std::cout << "Response body = " << body << std::endl;
+      // auto body = response.body();
+      // if (!body.empty())
+        // std::cout << "Response body = " << body << std::endl;
     },
     [&](std::exception_ptr exc) {
       // handle response failure
