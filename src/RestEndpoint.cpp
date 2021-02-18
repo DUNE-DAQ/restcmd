@@ -82,13 +82,6 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
   if ( ct->mime() != accepted_mime_ ) {
     auto res = response.send(Http::Code::Not_Acceptable, "Not a JSON command!\n");
   } else {
-    // std::ostringstream hdrsstr;
-    // for (const auto&[hk, rh] : headers.rawList()) {
-    //   hdrsstr << hk << ": " << rh.value() << '\n';
-    // }
-    // std::cout << "From: "<< addr.host() << '\n';
-    // std::cout << hdrsstr.str() << '\n';
-
     auto ansport = headers.getRaw("X-Answer-Port"); // RS: FIXME reply using headers
     cmdmeta_t meta;
     meta["answer-port"] = ansport.value();
@@ -101,15 +94,13 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
 void RestEndpoint::handleResponseCommand(const cmdobj_t& cmd, cmdmeta_t& meta) 
 {
   std::ostringstream addrstr;
-  addrstr << meta["answer-host"].get<std::string>() << ":" << meta["answer-port"].get<std::string>();
+  addrstr << meta["answer-host"].get<std::string>() << ":" << meta["answer-port"].get<std::string>() << "/response";
   meta["command"] = cmd;
+  ERS_INFO("Sending POST request to " << addrstr.str());
   auto response = http_client_->post(addrstr.str()).body(meta.dump()).send();
   response.then(
     [&](Http::Response response) {
       ERS_INFO("Response code = " << response.code());
-      // auto body = response.body();
-      // if (!body.empty())
-        // std::cout << "Response body = " << body << std::endl;
     },
     [&](std::exception_ptr exc) {
       // handle response failure

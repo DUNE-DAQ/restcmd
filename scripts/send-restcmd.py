@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 app = Flask(__name__)
 
-@app.route('/', methods = ['POST'])
+@app.route('/response', methods = ['POST'])
 def index():
   json = request.get_json(force=True)
   print("Result: ", json["result"])
