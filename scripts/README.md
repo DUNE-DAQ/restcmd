@@ -15,3 +15,9 @@ One can also specify a wait time between sending commands.
 There is also an interactive mode. This requires typing the next command's ID from the set of commands that are available in the file:
 
     send-restcmd.py --file ../test/fdpc-commands.json --interactive
+
+## Receiving command return
+
+    recv-restcmd.py
+
+starts a Flask server exposing a POST `/response` route on a configurable port (default 12333).
