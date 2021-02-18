@@ -72,5 +72,4 @@ elif isinstance(cmdstr, list):
       except EOFError as e:
         break
 
-
 print('Exiting...')
