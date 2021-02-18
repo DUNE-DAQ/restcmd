@@ -7,7 +7,7 @@
  */
 #include "RestEndpoint.hpp"
 
-#include <ers/Issue.h>
+#include <ers/ers.h>
 
 #include <chrono>
 #include <future>
@@ -82,10 +82,10 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
   if ( ct->mime() != accepted_mime_ ) {
     auto res = response.send(Http::Code::Not_Acceptable, "Not a JSON command!\n");
   } else {
-    std::ostringstream hdrsstr;
-    for (const auto&[hk, rh] : headers.rawList()) {
-      hdrsstr << hk << ": " << rh.value() << '\n';
-    }
+    // std::ostringstream hdrsstr;
+    // for (const auto&[hk, rh] : headers.rawList()) {
+    //   hdrsstr << hk << ": " << rh.value() << '\n';
+    // }
     // std::cout << "From: "<< addr.host() << '\n';
     // std::cout << hdrsstr.str() << '\n';
 
@@ -107,7 +107,7 @@ void RestEndpoint::handleResponseCommand(cmdmeta_t & meta)
   auto response = http_client_->post(addrstr.str()).body(nlohmann::json(meta).dump()).send();
   response.then(
     [&](Http::Response response) {
-      std::cout << "Response code = " << response.code() << std::endl;
+      ERS_INFO("Response code = " << response.code());
       // auto body = response.body();
       // if (!body.empty())
         // std::cout << "Response body = " << body << std::endl;

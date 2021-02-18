@@ -7,7 +7,7 @@ import time
 import sys
 
 from flask import Flask, request
-import threading
+from multiprocessing import Process
 
 parser = argparse.ArgumentParser(description='POST command object from file to commanded endpoint.')
 parser.add_argument('--host', type=str, default='localhost', help='target host/endpoint')
@@ -28,14 +28,15 @@ app = Flask(__name__)
 def index():
   json = request.get_json(force=True)
   print("Result: ", json["result"])
-  print("of the command: ", json["command"])
+  print("of command: ", json["command"])
   return 'Response received'
 
 def FlaskApp():
   app.run(port=args.answer_port)
 
 if __name__ == "__main__":
-  threading.Thread(target=FlaskApp).start()
+  flask_server = Process(target=FlaskApp)
+  flask_server.start()
 
 url = 'http://'+args.host+':'+str(args.port)+'/'+args.route
 print('Target url: ' + url)
@@ -90,4 +91,9 @@ elif isinstance(cmdstr, list):
       except EOFError as e:
         break
 
+print("Wait for response...")
+time.sleep(0.5)
 print('Exiting...')
+flask_server.terminate()
+flask_server.join()
+
