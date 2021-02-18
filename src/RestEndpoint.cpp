@@ -90,21 +90,20 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
     // std::cout << hdrsstr.str() << '\n';
 
     auto ansport = headers.getRaw("X-Answer-Port"); // RS: FIXME reply using headers
-    cmdmeta_t meta{{"command", request.body()}};
+    cmdmeta_t meta;
     meta["answer-port"] = ansport.value();
     meta["answer-host"] = addr.host();
-    command_callback_(meta); // RS: FIXME parse errors
+    command_callback_(nlohmann::json(request.body()), meta); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
 }
 
-void RestEndpoint::handleResponseCommand(cmdmeta_t & meta) 
+void RestEndpoint::handleResponseCommand(const cmdobj_t& cmd, cmdmeta_t& meta) 
 {
   std::ostringstream addrstr;
-  addrstr << meta["answer-host"] << ":" << meta["answer-port"];
-  meta.erase("answer-host");
-  meta.erase("answer-port");
-  auto response = http_client_->post(addrstr.str()).body(nlohmann::json(meta).dump()).send();
+  addrstr << meta["answer-host"].get<std::string>() << ":" << meta["answer-port"].get<std::string>();
+  meta["command"] = cmd;
+  auto response = http_client_->post(addrstr.str()).body(meta.dump()).send();
   response.then(
     [&](Http::Response response) {
       ERS_INFO("Response code = " << response.code());

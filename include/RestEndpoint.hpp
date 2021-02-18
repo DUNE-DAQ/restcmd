@@ -30,12 +30,13 @@
 namespace dunedaq {
 namespace restcmd {
 
-typedef std::map<std::string, std::string> cmdmeta_t;
+typedef nlohmann::json cmdobj_t;
+typedef nlohmann::json cmdmeta_t;
 
 class RestEndpoint {
 public: 
   explicit RestEndpoint(const std::string& /*uri*/, int port,
-                        std::function<void(cmdmeta_t)> callback) noexcept 
+                        std::function<void(const cmdobj_t&, cmdmeta_t)> callback) noexcept 
     : port_{ static_cast<uint16_t>(port) }
     , address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
@@ -51,7 +52,7 @@ public:
   void shutdown();
 
   // Client handler
-  void handleResponseCommand(cmdmeta_t& meta);
+  void handleResponseCommand(const cmdobj_t& cmd, cmdmeta_t& meta);
   
 private:
   void createRouting();
@@ -76,7 +77,7 @@ private:
   std::vector<Pistache::Async::Promise<Pistache::Http::Response>> http_client_responses_;
 
   // Function to call with received POST bodies
-  std::function<void(cmdmeta_t)> command_callback_;
+  std::function<void(const cmdobj_t&, cmdmeta_t)> command_callback_;
 
   // Background server thread
   std::thread server_thread_;
