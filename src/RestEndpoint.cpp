@@ -7,7 +7,7 @@
  */
 #include "RestEndpoint.hpp"
 
-#include <ers/ers.h>
+#include <logging/Logging.hpp>
 
 #include <chrono>
 #include <future>
@@ -96,11 +96,11 @@ void RestEndpoint::handleResponseCommand(const cmdobj_t& cmd, cmdmeta_t& meta)
   std::ostringstream addrstr;
   addrstr << meta["answer-host"].get<std::string>() << ":" << meta["answer-port"].get<std::string>() << "/response";
   meta["command"] = cmd;
-  ERS_INFO("Sending POST request to " << addrstr.str());
+  TLOG_DEBUG(1) << "Sending POST request to " << addrstr.str();
   auto response = http_client_->post(addrstr.str()).body(meta.dump()).send();
   response.then(
     [&](Http::Response response) {
-      ERS_INFO("Response code = " << response.code());
+      TLOG_DEBUG(1)<<"Response code = " << response.code();
     },
     [&](std::exception_ptr exc) {
       // handle response failure
