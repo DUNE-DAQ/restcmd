@@ -12,7 +12,7 @@
 #include "cmdlib/CommandedObject.hpp"
 #include "rest_commanded_object.hpp"
 
-#include <ers/ers.h>
+#include <logging/Logging.hpp>
 
 #include <string>
 #include <chrono>
@@ -28,7 +28,7 @@ createFacility(const std::string& uri)
     return makeCommandFacility(uri);
   }
   catch (const std::exception& ex) {
-    ERS_INFO("Something is wrong -> " << ex.what());
+    TLOG() << "Something is wrong -> " << ex.what();
   }
   return nullptr; 
 }
@@ -41,7 +41,7 @@ main(int /*argc*/, char** /*argv[]*/)
 
   // Killswitch that flips the run marker
   auto killswitch = std::thread([&]() {
-    ERS_INFO("Application will terminate in 20s...");
+    TLOG() << "Application will terminate in 20s...";
     std::this_thread::sleep_for(std::chrono::seconds(20));
     marker.store(false);
   });
@@ -71,6 +71,6 @@ main(int /*argc*/, char** /*argv[]*/)
   }
 
   // Exit
-  ERS_INFO("Exiting.");
+  TLOG() << "Exiting.";
   return 0;
 }
