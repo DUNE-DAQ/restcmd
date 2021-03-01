@@ -6,7 +6,6 @@
  * received with this code.
  */
 #include "RestEndpoint.hpp"
-#include "cmdlib/cmd/Nljs.hpp"
 
 #include <logging/Logging.hpp>
 
@@ -77,7 +76,7 @@ getClientAddress(const Pistache::Rest::Request &request) {
 
 void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::ResponseWriter response)
 {
-  dunedaq::cmdlib::cmd::CommandReply reply;
+  dunedaq::cmdlib::cmd::CommandReply meta;
   auto addr = request.address();
   auto headers = request.headers();
   auto ct = headers.get<Http::Header::ContentType>(); 
@@ -85,26 +84,23 @@ void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::Respon
     auto res = response.send(Http::Code::Not_Acceptable, "Not a JSON command!\n");
   } else {
     auto ansport = headers.getRaw("X-Answer-Port"); // RS: FIXME reply using headers
-    cmdmeta_t meta;
-    reply.data["ans-port"] = ansport.value();
-    reply.data["ans-host"] = addr.host();
-    dunedaq::cmdlib::cmd::to_json(meta, reply);
+    meta.data["ans-port"] = ansport.value();
+    meta.data["ans-host"] = addr.host();
     command_callback_(nlohmann::json::parse(request.body()), meta); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
 }
 
-void RestEndpoint::handleResponseCommand(const cmdobj_t& cmd, cmdmeta_t& meta) 
+void RestEndpoint::handleResponseCommand(const cmdobj_t& cmd, dunedaq::cmdlib::cmd::CommandReply& meta) 
 {
-  dunedaq::cmdlib::cmd::CommandReply reply = meta.get<dunedaq::cmdlib::cmd::CommandReply>();
   dunedaq::cmdlib::cmd::Command command = cmd.get<dunedaq::cmdlib::cmd::Command>();
   std::ostringstream addrstr;
-  addrstr << reply.data["ans-host"].get<std::string>() << ":" << reply.data["ans-port"].get<std::string>() << "/response";
-  reply.data["cmdid"] = command.id;
+  addrstr << meta.data["ans-host"].get<std::string>() << ":" << meta.data["ans-port"].get<std::string>() << "/response";
+  meta.data["cmdid"] = command.id;
   TLOG() << "Sending POST request to " << addrstr.str();
 
-  cmdmeta_t body_json;
-  dunedaq::cmdlib::cmd::to_json(body_json, reply);
+  nlohmann::json body_json;
+  dunedaq::cmdlib::cmd::to_json(body_json, meta);
   auto response = http_client_->post(addrstr.str()).body(body_json.dump()).send();
   response.then(
     [&](Http::Response response) {

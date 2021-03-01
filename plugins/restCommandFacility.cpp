@@ -94,7 +94,7 @@ protected:
     typedef CommandFacility inherited;
     
     // Implementation of completionHandler interface
-    void completion_callback(const cmdobj_t& cmd, cmdmeta_t& meta) {
+    void completion_callback(const cmdobj_t& cmd, cmd::CommandReply& meta) {
       rest_endpoint_->handleResponseCommand(cmd, meta);
     }
 
@@ -102,7 +102,7 @@ private:
     // Manager, HTTP REST Endpoint and backend resources
     mutable std::unique_ptr<RestEndpoint> rest_endpoint_;
 
-    typedef std::function<void(const cmdobj_t&, cmdmeta_t)> RequestCallback;
+    typedef std::function<void(const cmdobj_t&, cmd::CommandReply)> RequestCallback;
     RequestCallback command_executor_;
 
 };
