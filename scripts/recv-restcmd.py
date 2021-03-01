@@ -14,8 +14,9 @@ app = Flask(__name__)
 @app.route('/response', methods = ['POST'])
 def index():
   json = request.get_json(force=True)
-  print("Result: ", json["result"])
-  print("of command: ", json["command"])
+  print("Command: ", json["data"]["cmdid"])
+  print("Success:", json["success"])
+  print("Result:", json["result"])
   return 'Response received'
 
 if __name__ == "__main__":
