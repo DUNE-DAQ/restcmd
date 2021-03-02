@@ -9,6 +9,10 @@ import sys
 from flask import Flask, request, cli
 from multiprocessing import Process, SimpleQueue
 
+OKGREEN = '\033[92m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+
 cli.show_server_banner = lambda *_: None
 
 parser = argparse.ArgumentParser(description='POST command object from file to commanded endpoint.')
@@ -69,8 +73,11 @@ elif isinstance(cmdstr, list):
         r = reply_queue.get()
         print("Reply:")
         print("Command: ", r["data"]["cmdid"])
-        print("Success:", r["success"])
-        print("Result:", r["result"])
+        if r["success"]:
+          print(f"{OKGREEN}", end='')
+        else:
+          print(f"{FAIL}", end='')
+        print("Result:", r["result"], f"{ENDC}")
         time.sleep(args.wait)
       except:
         print('Failed to send due to: %s' % sys.exc_info()[0])
@@ -94,8 +101,11 @@ elif isinstance(cmdstr, list):
             r = reply_queue.get()
             print("Reply:")
             print("Command: ", r["data"]["cmdid"])
-            print("Success:", r["success"])
-            print("Result:", r["result"])
+            if r["success"]:
+              print(f"{OKGREEN}", end='')
+            else:
+              print(f"{FAIL}", end='')
+            print("Result:", r["result"], f"{ENDC}")
           except:
             print('Failed to send due to: %s' % sys.exc_info()[0])
       except KeyboardInterrupt as ki:
