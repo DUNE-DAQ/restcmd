@@ -6,8 +6,10 @@ import json
 import time
 import sys
 
-from flask import Flask, request
+from flask import Flask, request, cli
 from multiprocessing import Process, SimpleQueue
+
+cli.show_server_banner = lambda *_: None
 
 parser = argparse.ArgumentParser(description='POST command object from file to commanded endpoint.')
 parser.add_argument('--host', type=str, default='localhost', help='target host/endpoint')
@@ -25,7 +27,6 @@ args = parser.parse_args()
 reply_queue = SimpleQueue() # command reply queue
 
 app = Flask(__name__)
-
 @app.route('/response', methods = ['POST'])
 def index():
   json = request.get_json(force=True)
