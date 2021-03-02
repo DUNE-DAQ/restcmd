@@ -21,3 +21,9 @@ There is also an interactive mode. This requires typing the next command's ID fr
     recv-restcmd.py
 
 starts a Flask server exposing a POST `/response` route on a configurable port (default 12333).
+
+## Sending and receiving command replies
+
+    send-recv-restcmd.py
+
+The best of both scripts with a fancy "command reply queue".
