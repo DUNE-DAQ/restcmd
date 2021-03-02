@@ -5,9 +5,13 @@ import requests
 import json
 import time
 import sys
+from colorama import Fore, Back, Style
 
 from flask import Flask, request, cli
 from multiprocessing import Process, SimpleQueue
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 OKGREEN = '\033[92m'
 FAIL = '\033[91m'
@@ -43,7 +47,7 @@ if __name__ == "__main__":
   flask_server.start()
 
 url = 'http://'+args.host+':'+str(args.port)+'/'+args.route
-print('Target url: ' + url)
+print(f'Target url: {Fore.YELLOW+url+Style.RESET_ALL}')
 headers = {'content-type': 'application/json', 'X-Answer-Port': str(args.answer_port)}
 
 cmdstr = None
@@ -55,57 +59,49 @@ except:
   raise SystemExit(0)
 
 if isinstance(cmdstr, dict):
-  print('This is single command.')
+  print(f'Found single command in {args.file}.')
   try:
     response = requests.post(url, data=json.dumps(cmdstr), headers=headers)
     print('Response code: %s with content: %s' % (str(response), str(response.content)))
   except:
     print('Failed to send due to: %s' % sys.exc_info()[0])
 elif isinstance(cmdstr, list):
-  print('This is a list of commands.')
+  print(f'Found a list of commands in {args.file}')
   avacmds = [cdict['id'] for cdict in cmdstr if cdict["id"]]
   if not args.interactive:
     for cmd in cmdstr:
       try:
         response = requests.post(url, data=json.dumps(cmd), headers=headers)
-        print('Response code: %s with content: %s' % (str(response), str(response.content)))
+        print('Response code: %s with content: %s' % (str(response), str(response.content.encode('utf-8'))))
         # get command reply from queue
         r = reply_queue.get()
         print("Reply:")
-        print("Command: ", r["data"]["cmdid"])
-        if r["success"]:
-          print(f"{OKGREEN}", end='')
-        else:
-          print(f"{FAIL}", end='')
-        print("Result:", r["result"], f"{ENDC}")
+        print(f"  Command : {Fore.CYAN}{r['data']['cmdid']}{Style.RESET_ALL}")
+        print(f"  Result  : {Fore.GREEN if r['success'] else Fore.RED}{r['result']}{Style.RESET_ALL}")
         time.sleep(args.wait)
       except:
         print('Failed to send due to: %s' % sys.exc_info()[0])
   else:
-    print('Interactive mode. Type the ID of the next command to send, or type \'end\' to finish.')
+    print('\nInteractive mode. Type the ID of the next command to send, or type \'end\' to finish.')
     while True:
       try:
-        print('\nAvailable commands: %s' % avacmds)
-        nextcmd = input('Press enter a command to send next: ')
+        print(f'\nAvailable commands: {", ".join([Fore.CYAN+c+Style.RESET_ALL for c in avacmds])}')
+        nextcmd = input('command >> ')
         if nextcmd == "end":
           break
         cmdobj = [cdict for cdict in cmdstr if cdict["id"] == nextcmd]
         if not cmdobj:
           print('Unrecognized command %s. (Not present in the command list?)' % nextcmd)
         else:
-          print('Sending %s command.' % nextcmd)
+          print(f'\nSending {Fore.CYAN+nextcmd+Style.RESET_ALL} command.')
           try: 
             response = requests.post(url, data=json.dumps(cmdobj[0]), headers=headers)
             print('Response code: %s with content: %s' % (str(response), str(response.content))) 
             # get command reply from queue
             r = reply_queue.get()
             print("Reply:")
-            print("Command: ", r["data"]["cmdid"])
-            if r["success"]:
-              print(f"{OKGREEN}", end='')
-            else:
-              print(f"{FAIL}", end='')
-            print("Result:", r["result"], f"{ENDC}")
+            print(f"  Command : {Fore.CYAN}{r['data']['cmdid']}{Style.RESET_ALL}")
+            print(f"  Result  : {Fore.GREEN if r['success'] else Fore.RED}{r['result']}{Style.RESET_ALL}")
           except:
             print('Failed to send due to: %s' % sys.exc_info()[0])
       except KeyboardInterrupt as ki:
