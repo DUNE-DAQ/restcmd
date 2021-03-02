@@ -64,15 +64,15 @@ elif isinstance(cmdstr, list):
       try:
         response = requests.post(url, data=json.dumps(cmd), headers=headers)
         print('Response code: %s with content: %s' % (str(response), str(response.content)))
+        # get command reply from queue
+        r = reply_queue.get()
+        print("Reply:")
+        print("Command: ", r["data"]["cmdid"])
+        print("Success:", r["success"])
+        print("Result:", r["result"])
         time.sleep(args.wait)
       except:
         print('Failed to send due to: %s' % sys.exc_info()[0])
-      # get command reply from queue
-      r = reply_queue.get()
-      print("Reply:")
-      print("Command: ", r["data"]["cmdid"])
-      print("Success:", r["success"])
-      print("Result:", r["result"])
   else:
     print('Interactive mode. Type the ID of the next command to send, or type \'end\' to finish.')
     while True:
@@ -89,14 +89,14 @@ elif isinstance(cmdstr, list):
           try: 
             response = requests.post(url, data=json.dumps(cmdobj[0]), headers=headers)
             print('Response code: %s with content: %s' % (str(response), str(response.content))) 
+            # get command reply from queue
+            r = reply_queue.get()
+            print("Reply:")
+            print("Command: ", r["data"]["cmdid"])
+            print("Success:", r["success"])
+            print("Result:", r["result"])
           except:
             print('Failed to send due to: %s' % sys.exc_info()[0])
-          # get command reply from queue
-          r = reply_queue.get()
-          print("Reply:")
-          print("Command: ", r["data"]["cmdid"])
-          print("Success:", r["success"])
-          print("Result:", r["result"])
       except KeyboardInterrupt as ki:
         break
       except EOFError as e:
