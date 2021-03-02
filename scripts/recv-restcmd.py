@@ -2,7 +2,6 @@
 
 import argparse
 from flask import Flask, request
-from multiprocessing import Process
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('-a', '--answer-port', type=int, default=12333, help='listening port for command return')
