@@ -22,13 +22,14 @@ parser.set_defaults(interactive=False)
 
 args = parser.parse_args()
 
-reply_queue = SimpleQueue()
+reply_queue = SimpleQueue() # command reply queue
 
 app = Flask(__name__)
 
 @app.route('/response', methods = ['POST'])
 def index():
   json = request.get_json(force=True)
+  # enqueue command reply
   reply_queue.put(json)
   return 'Response received'
 
@@ -66,7 +67,7 @@ elif isinstance(cmdstr, list):
         time.sleep(args.wait)
       except:
         print('Failed to send due to: %s' % sys.exc_info()[0])
-      # get response from queue
+      # get command reply from queue
       r = reply_queue.get()
       print("Reply:")
       print("Command: ", r["data"]["cmdid"])
@@ -90,7 +91,7 @@ elif isinstance(cmdstr, list):
             print('Response code: %s with content: %s' % (str(response), str(response.content))) 
           except:
             print('Failed to send due to: %s' % sys.exc_info()[0])
-          # get response from queue
+          # get command reply from queue
           r = reply_queue.get()
           print("Reply:")
           print("Command: ", r["data"]["cmdid"])
