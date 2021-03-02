@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(restcmd VERSION 1.0.3)
+project(restcmd VERSION 1.1.0)
 
 find_package(daq-cmake REQUIRED)
 
