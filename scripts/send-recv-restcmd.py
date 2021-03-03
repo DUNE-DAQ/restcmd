@@ -62,7 +62,7 @@ if isinstance(cmdstr, dict):
   print(f'Found single command in {args.file}.')
   try:
     response = requests.post(url, data=json.dumps(cmdstr), headers=headers)
-    print('Response code: %s with content: %s' % (str(response), str(response.content)))
+    print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
   except:
     print('Failed to send due to: %s' % sys.exc_info()[0])
 elif isinstance(cmdstr, list):
@@ -72,7 +72,7 @@ elif isinstance(cmdstr, list):
     for cmd in cmdstr:
       try:
         response = requests.post(url, data=json.dumps(cmd), headers=headers)
-        print('Response code: %s with content: %s' % (str(response), str(response.content.encode('utf-8'))))
+        print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
         # get command reply from queue
         r = reply_queue.get()
         print("Reply:")
@@ -96,7 +96,7 @@ elif isinstance(cmdstr, list):
           print(f'\nSending {Fore.CYAN+nextcmd+Style.RESET_ALL} command.')
           try: 
             response = requests.post(url, data=json.dumps(cmdobj[0]), headers=headers)
-            print('Response code: %s with content: %s' % (str(response), str(response.content))) 
+            print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
             # get command reply from queue
             r = reply_queue.get()
             print("Reply:")
