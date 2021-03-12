@@ -25,8 +25,10 @@ parser.add_argument('-p', '--port', type=int, default=12345, help='target port')
 parser.add_argument('-a', '--answer-port', type=int, default=12333, help='answer to service listening on this port')
 parser.add_argument('-r', '--route', type=str, default='command', help='target route on endpoint')
 parser.add_argument('-f', '--file', type=str, required=True, help='file that contains command to be posted') # This should be an argument
+group = parser.add_mutually_exclusive_group()
+group.add_argument('-c', '--command', type=str, default=None, help='Only send command COMMAND, not all commands in file')
 parser.add_argument('-w', '--wait', type=int, default=2, help='seconds to wait between sending commands')
-parser.add_argument('-i', '--interactive', dest='interactive', action='store_true', help='interactive mode')
+group.add_argument('-i', '--interactive', dest='interactive', action='store_true', help='interactive mode')
 parser.add_argument('--non-interactive', dest='interactive', action='store_false')
 parser.set_defaults(interactive=False)
 
@@ -68,9 +70,13 @@ if isinstance(cmdstr, dict):
 elif isinstance(cmdstr, list):
   print(f'Found a list of commands in {args.file}')
   avacmds = [cdict['id'] for cdict in cmdstr if cdict["id"]]
+  if args.command and not args.command in avacmds:
+    raise SystemExit(f"\nERROR: No command '{args.command}' found in file '{str(args.file)}'.")
   if not args.interactive:
     for cmd in cmdstr:
       try:
+        if args.command and cmd['id']!=args.command:
+          continue
         response = requests.post(url, data=json.dumps(cmd), headers=headers)
         print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
         # get command reply from queue
@@ -94,7 +100,7 @@ elif isinstance(cmdstr, list):
           print('Unrecognized command %s. (Not present in the command list?)' % nextcmd)
         else:
           print(f'\nSending {Fore.CYAN+nextcmd+Style.RESET_ALL} command.')
-          try: 
+          try:
             response = requests.post(url, data=json.dumps(cmdobj[0]), headers=headers)
             print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
             # get command reply from queue
