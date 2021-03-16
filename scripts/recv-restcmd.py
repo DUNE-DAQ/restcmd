@@ -14,6 +14,7 @@ app = Flask(__name__)
 def index():
   json = request.get_json(force=True)
   print("Command: ", json["data"]["cmdid"])
+  print("Application:", json["appname"])
   print("Success:", json["success"])
   print("Result:", json["result"])
   return 'Response received'

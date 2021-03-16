@@ -22,10 +22,10 @@ using namespace dunedaq::cmdlib;
 
 // Expects the created CommandFacilities to have problems.
 std::shared_ptr<CommandFacility>
-createFacility(const std::string& uri) 
+create_facility(const std::string& uri) 
 {
   try {
-    return makeCommandFacility(uri);
+    return make_command_facility(uri);
   }
   catch (const std::exception& ex) {
     TLOG() << "Something is wrong -> " << ex.what();
@@ -50,17 +50,17 @@ main(int /*argc*/, char** /*argv[]*/)
   RestCommandedObject obj(marker);
 
   // Exercise bad URIs.
-  auto fac = createFacility(std::string("rest://"));
-  fac = createFacility(std::string("rest://localhost"));
-  fac = createFacility(std::string("rest://localhost:"));
-  fac = createFacility(std::string("rest://localhost:-1"));
-  fac = createFacility(std::string("rest://localhost:9999999999"));
+  auto fac = create_facility(std::string("rest://"));
+  fac = create_facility(std::string("rest://localhost"));
+  fac = create_facility(std::string("rest://localhost:"));
+  fac = create_facility(std::string("rest://localhost:-1"));
+  fac = create_facility(std::string("rest://localhost:9999999999"));
 
   // Create good facility
-  fac = createFacility(std::string("rest://localhost:12345"));
+  fac = create_facility(std::string("rest://localhost:12345"));
 
   // Add commanded object to facility
-  fac->set_commanded(obj);
+  fac->set_commanded(obj, "pippo");
 
   // Run until marked
   fac->run(marker);
