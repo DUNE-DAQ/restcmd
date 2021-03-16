@@ -21,7 +21,7 @@ args = parser.parse_args()
 
 url = 'http://'+args.host+':'+str(args.port)+'/'+args.route
 print('Target url: ' + url)
-headers = {'content-type': 'application/json', 'x-answer-port': bytes(args.answer_port)}
+headers = {'content-type': 'application/json', 'X-Answer-Port': str(args.answer_port)}
 
 cmdstr = None
 try:

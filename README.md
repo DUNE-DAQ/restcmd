@@ -40,19 +40,19 @@ The URI is parsed, and the facility will listen to POST requests on the specifie
 ### <a name="sendcmd"></a> With send-restcmd
 The scripts directory also contains a command sender application based on Python3 and its Requests module. It is used on the following way:
 
-    send-restcmd.py --file ./sourcecode/restcmd/test/test-init.json
+    send-recv-restcmd.py --file ./sourcecode/restcmd/test/test-init.json
 
 The script can recognize multiple command objects in the same file, and send them one by one, with a configurable wait time between each send:
 
-    send-restcmd.py --wait 3 --file ./sourcecode/restcmd/test/fdpc-commands.json
+    send-recv-restcmd.py --wait 3 --file ./sourcecode/restcmd/test/fdpc-commands.json
 
 There is also an interactive mode. This requires typing the next command's ID from the set of commands that are available in the file:
 
-    send-restcmd.py --interactive --file ./sourcecode/restcmd/test/fdpc-commands.json
+    send-recv-restcmd.py --interactive --file ./sourcecode/restcmd/test/fdpc-commands.json
 
 To see details how to connect to different applications, have a look on the help:
 
-    send-restcmd.py --help
+    send-recv-restcmd.py --help
 
 ### <a name="sendcurl"></a> With CURL
 Sending commands with `curl` makes low-level debugging easier.

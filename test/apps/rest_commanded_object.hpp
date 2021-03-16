@@ -12,7 +12,7 @@
 
 #include "cmdlib/CommandedObject.hpp"
 
-#include <ers/ers.h>
+#include <logging/Logging.hpp>
 
 #include <stdexcept>
 #include <string>
@@ -30,7 +30,7 @@ struct RestCommandedObject : public dunedaq::cmdlib::CommandedObject
   explicit RestCommandedObject(std::atomic<bool>& rm) : runmarker_(rm) { 
     stats_ = std::thread([&](){
       while(runmarker_) {
-        ERS_INFO("Total number of commands received: " << counter_);
+        TLOG() <<"Total number of commands received: " << counter_;
         std::this_thread::sleep_for(std::chrono::seconds(5)); 
       }
     });

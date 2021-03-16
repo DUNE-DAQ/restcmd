@@ -12,7 +12,7 @@
 #include "cmdlib/CommandedObject.hpp"
 #include "rest_commanded_object.hpp"
 
-#include <ers/ers.h>
+#include <logging/Logging.hpp>
 
 #include <string>
 #include <chrono>
@@ -22,13 +22,13 @@ using namespace dunedaq::cmdlib;
 
 // Expects the created CommandFacilities to have problems.
 std::shared_ptr<CommandFacility>
-createFacility(const std::string& uri) 
+create_facility(const std::string& uri) 
 {
   try {
-    return makeCommandFacility(uri);
+    return make_command_facility(uri);
   }
   catch (const std::exception& ex) {
-    ERS_INFO("Something is wrong -> " << ex.what());
+    TLOG() << "Something is wrong -> " << ex.what();
   }
   return nullptr; 
 }
@@ -41,7 +41,7 @@ main(int /*argc*/, char** /*argv[]*/)
 
   // Killswitch that flips the run marker
   auto killswitch = std::thread([&]() {
-    ERS_INFO("Application will terminate in 20s...");
+    TLOG() << "Application will terminate in 20s...";
     std::this_thread::sleep_for(std::chrono::seconds(20));
     marker.store(false);
   });
@@ -50,17 +50,17 @@ main(int /*argc*/, char** /*argv[]*/)
   RestCommandedObject obj(marker);
 
   // Exercise bad URIs.
-  auto fac = createFacility(std::string("rest://"));
-  fac = createFacility(std::string("rest://localhost"));
-  fac = createFacility(std::string("rest://localhost:"));
-  fac = createFacility(std::string("rest://localhost:-1"));
-  fac = createFacility(std::string("rest://localhost:9999999999"));
+  auto fac = create_facility(std::string("rest://"));
+  fac = create_facility(std::string("rest://localhost"));
+  fac = create_facility(std::string("rest://localhost:"));
+  fac = create_facility(std::string("rest://localhost:-1"));
+  fac = create_facility(std::string("rest://localhost:9999999999"));
 
   // Create good facility
-  fac = createFacility(std::string("rest://localhost:12345"));
+  fac = create_facility(std::string("rest://localhost:12345"));
 
   // Add commanded object to facility
-  fac->setCommanded(obj);
+  fac->set_commanded(obj, "pippo");
 
   // Run until marked
   fac->run(marker);
@@ -71,6 +71,6 @@ main(int /*argc*/, char** /*argv[]*/)
   }
 
   // Exit
-  ERS_INFO("Exiting.");
+  TLOG() << "Exiting.";
   return 0;
 }
