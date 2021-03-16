@@ -82,6 +82,7 @@ elif isinstance(cmdstr, list):
         # get command reply from queue
         r = reply_queue.get()
         print("Reply:")
+        print(f"  Application : {Fore.CYAN}{r['appname']}{Style.RESET_ALL}")
         print(f"  Command : {Fore.CYAN}{r['data']['cmdid']}{Style.RESET_ALL}")
         print(f"  Result  : {Fore.GREEN if r['success'] else Fore.RED}{r['result']}{Style.RESET_ALL}")
         time.sleep(args.wait)
