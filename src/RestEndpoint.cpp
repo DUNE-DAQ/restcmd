@@ -53,7 +53,7 @@ void RestEndpoint::shutdown()
 void RestEndpoint::createRouting()
 {
   using namespace Rest;
-  Routes::Post(router_, "/command", Routes::bind(&RestEndpoint::handleRouteCommand, this));
+  Routes::Post(router_, "/command", Routes::bind(&RestEndpoint::handle_route_command, this));
 }
 
 inline void extendHeader(Http::Header::Collection& headers) 
@@ -74,7 +74,7 @@ getClientAddress(const Pistache::Rest::Request &request) {
   return request.address().host();
 }
 
-void RestEndpoint::handleRouteCommand(const Rest::Request& request, Http::ResponseWriter response)
+void RestEndpoint::handle_route_command(const Rest::Request& request, Http::ResponseWriter response)
 {
   dunedaq::cmdlib::cmd::CommandReply meta;
   auto addr = request.address();

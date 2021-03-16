@@ -61,7 +61,7 @@ private:
   void serveTask(); 
 
   // Route handler
-  void handleRouteCommand(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response);
+  void handle_route_command(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response);
 
 
   // REST
