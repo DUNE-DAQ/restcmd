@@ -1,5 +1,5 @@
 ## restcmd - HTTP REST backend based CommandFacility
-This implementation of the CommandFacility interface from [cmdlib](https://dune-daq-sw.readthedocs.io/en/latest/packages/), is providing a way to send
+This implementation of the CommandFacility interface from [cmdlib](https://dune-daq-sw.readthedocs.io/en/latest/packages/cmdlib), is providing a way to send
 commands to applications via HTTP. This is carried out by the small web-server that this plugin
 carries. The server answers to HTTP POST requests, where the request body is the content of the
 command itself. The package ships a really lightweight Python script to send commands from the
