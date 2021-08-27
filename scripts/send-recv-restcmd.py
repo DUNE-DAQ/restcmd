@@ -10,6 +10,17 @@ from colorama import Fore, Back, Style
 from flask import Flask, request, cli
 from multiprocessing import Process, SimpleQueue
 import logging
+
+from rich.logging import RichHandler
+
+logging.basicConfig(
+    level="INFO",
+    format="%(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(rich_tracebacks=True)]
+)
+
+
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
@@ -23,6 +34,9 @@ parser = argparse.ArgumentParser(description='POST command object from file to c
 parser.add_argument('--host', type=str, default='localhost', help='target host/endpoint')
 parser.add_argument('-p', '--port', type=int, default=12345, help='target port')
 parser.add_argument('-a', '--answer-port', type=int, default=12333, help='answer to service listening on this port')
+parser.add_argument('-o', '--answer-host', type=str, default=None, help='answer to service listening on this host')
+parser.add_argument('-x', '--proxy', type=str, default=None, help='Use proxy for posting requests')
+
 parser.add_argument('-r', '--route', type=str, default='command', help='target route on endpoint')
 parser.add_argument('-f', '--file', type=str, required=True, help='file that contains command to be posted') # This should be an argument
 group = parser.add_mutually_exclusive_group()
@@ -35,6 +49,7 @@ parser.set_defaults(interactive=False)
 args = parser.parse_args()
 
 reply_queue = SimpleQueue() # command reply queue
+
 
 app = Flask(__name__)
 @app.route('/response', methods = ['POST'])
@@ -49,24 +64,37 @@ if __name__ == "__main__":
   flask_server.start()
 
 url = 'http://'+args.host+':'+str(args.port)+'/'+args.route
-print(f'Target url: {Fore.YELLOW+url+Style.RESET_ALL}')
+# print(f'Target url: {Fore.YELLOW+url+Style.RESET_ALL}')
+logging.info(f'Target url: {url}')
 headers = {'content-type': 'application/json', 'X-Answer-Port': str(args.answer_port)}
+if not args.answer_host is None:
+  headers['X-Answer-Host'] = args.answer_host
 
 cmdstr = None
 try:
   with open(args.file) as f:
     cmdstr = json.load(f)
 except:
-  print(f"\nERROR: failed to open file '{str(args.file)}'.")
+  # print(f"\nERROR: failed to open file '{str(args.file)}'.")
+  logging.error(f"ERROR: failed to open file '{str(args.file)}'.")
   raise SystemExit(0)
 
 if isinstance(cmdstr, dict):
-  print(f'Found single command in {args.file}.')
+  logging.info(f'Found single command in {args.file}.')
   try:
-    response = requests.post(url, data=json.dumps(cmdstr), headers=headers)
-    print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
-  except:
-    print('Failed to send due to: %s' % sys.exc_info()[0])
+    response = requests.post(
+      url, 
+      data=json.dumps(cmdstr),
+      headers=headers,
+      proxies=({
+        'http': f'socks5h://{args.proxy}',
+        'https': f'socks5h://{args.proxy}'}
+        if args.proxy else None
+      )
+    )
+    logging.info(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
+  except Exception as e:
+    logging.error(f'Failed to send due to: {e}')
 elif isinstance(cmdstr, list):
   print(f'Found a list of commands in {args.file}')
   avacmds = [cdict['id'] for cdict in cmdstr if cdict["id"]]
@@ -77,7 +105,16 @@ elif isinstance(cmdstr, list):
       try:
         if args.command and cmd['id']!=args.command:
           continue
-        response = requests.post(url, data=json.dumps(cmd), headers=headers)
+        response = requests.post(
+          url, 
+          data=json.dumps(cmd), 
+          headers=headers,
+          proxies=({
+            'http': f'socks5h://{args.proxy}',
+            'https': f'socks5h://{args.proxy}'}
+            if args.proxy else None
+          )
+        )
         print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
         # get command reply from queue
         r = reply_queue.get()
@@ -102,7 +139,16 @@ elif isinstance(cmdstr, list):
         else:
           print(f'\nSending {Fore.CYAN+nextcmd+Style.RESET_ALL} command.')
           try:
-            response = requests.post(url, data=json.dumps(cmdobj[0]), headers=headers)
+            response = requests.post(
+              url, 
+              data=json.dumps(cmdobj[0]),
+              headers=headers,
+              proxies=({
+                'http': f'socks5h://{args.proxy}',
+                'https': f'socks5h://{args.proxy}'}
+                if args.proxy else None
+              )
+            )
             print(f'Response code: {str(response)} with content: {response.content.decode("utf-8")}')
             # get command reply from queue
             r = reply_queue.get()

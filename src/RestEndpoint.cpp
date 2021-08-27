@@ -84,8 +84,9 @@ void RestEndpoint::handle_route_command(const Rest::Request& request, Http::Resp
     auto res = response.send(Http::Code::Not_Acceptable, "Not a JSON command!\n");
   } else {
     auto ansport = headers.getRaw("X-Answer-Port"); // RS: FIXME reply using headers
+    auto anshost = headers.tryGetRaw("X-Answer-Host"); // RS: FIXME reply using headers
     meta.data["ans-port"] = ansport.value();
-    meta.data["ans-host"] = addr.host();
+    meta.data["ans-host"] = ( !anshost.isEmpty() ? anshost.get().value() : addr.host() );
     command_callback_(nlohmann::json::parse(request.body()), meta); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
