@@ -112,7 +112,7 @@ void RestEndpoint::handleResponseCommand(const cmdobj_t& cmd, dunedaq::cmdlib::c
         std::rethrow_exception(exc);
       }
       catch (const std::exception &e) {
-        std::cout << "Exception " << e.what() << '\n';
+        TLOG() << "Exception thrown by Http::Client::post() call: \"" << e.what() << "\"; errno = " << errno;
       }
     }
   );
