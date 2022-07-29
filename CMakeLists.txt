@@ -12,7 +12,7 @@ find_package(nlohmann_json REQUIRED)
 find_package(Pistache REQUIRED)
 find_package(ers REQUIRED)
 
-set(RESTCMD_DEPENDENCIES ${CETLIB} ${CETLIB_EXCEPT} ers::ers logging::logging cmdlib::cmdlib nlohmann_json::nlohmann_json pistache_shared)
+set(RESTCMD_DEPENDENCIES ${CETLIB} ${CETLIB_EXCEPT} ers::ers logging::logging cmdlib::cmdlib nlohmann_json::nlohmann_json pistache)
 
 ##############################################################################
 # Main library
