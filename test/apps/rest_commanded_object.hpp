@@ -23,34 +23,30 @@ struct RestCommandedObject : public dunedaq::cmdlib::CommandedObject
   std::atomic<bool>& runmarker_;
   std::thread stats_;
 
-  void execute(const dunedaq::cmdlib::cmdobj_t& /*command*/) {
-    ++counter_;
-  }
+  void execute(const dunedaq::cmdlib::cmdobj_t& /*command*/) { ++counter_; }
 
-  explicit RestCommandedObject(std::atomic<bool>& rm) : runmarker_(rm) { 
-    stats_ = std::thread([&](){
-      while(runmarker_) {
-        TLOG() <<"Total number of commands received: " << counter_;
-        std::this_thread::sleep_for(std::chrono::seconds(5)); 
+  explicit RestCommandedObject(std::atomic<bool>& rm)
+    : runmarker_(rm)
+  {
+    stats_ = std::thread([&]() {
+      while (runmarker_) {
+        TLOG() << "Total number of commands received: " << counter_;
+        std::this_thread::sleep_for(std::chrono::seconds(5));
       }
     });
   }
 
-  ~RestCommandedObject(){
+  ~RestCommandedObject()
+  {
     if (stats_.joinable()) {
       stats_.join();
-    }   
+    }
   }
 
-  RestCommandedObject(const RestCommandedObject&) =
-    delete; ///< RestCommandedObject is not copy-constructible
-  RestCommandedObject& operator=(const RestCommandedObject&) =
-    delete; ///< RestCommandedObject is not copy-assignable
-  RestCommandedObject(RestCommandedObject&&) =
-    delete; ///< RestCommandedObject is not move-constructible
-  RestCommandedObject& operator=(RestCommandedObject&&) =
-    delete; ///< RestCommandedObject is not move-assignable
-
+  RestCommandedObject(const RestCommandedObject&) = delete; ///< RestCommandedObject is not copy-constructible
+  RestCommandedObject& operator=(const RestCommandedObject&) = delete; ///< RestCommandedObject is not copy-assignable
+  RestCommandedObject(RestCommandedObject&&) = delete;            ///< RestCommandedObject is not move-constructible
+  RestCommandedObject& operator=(RestCommandedObject&&) = delete; ///< RestCommandedObject is not move-assignable
 };
 
 #endif // RESTCMD_TEST_REST_COMMANDED_OBJECT_HPP_
