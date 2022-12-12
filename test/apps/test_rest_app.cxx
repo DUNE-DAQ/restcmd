@@ -14,29 +14,30 @@
 
 #include <logging/Logging.hpp>
 
+#include <string>
 #include <chrono>
 #include <memory>
-#include <string>
 
 using namespace dunedaq::cmdlib;
 
 // Expects the created CommandFacilities to have problems.
 std::shared_ptr<CommandFacility>
-create_facility(const std::string& uri)
+create_facility(const std::string& uri) 
 {
   try {
     return make_command_facility(uri);
-  } catch (const std::exception& ex) {
+  }
+  catch (const std::exception& ex) {
     TLOG() << "Something is wrong -> " << ex.what();
   }
-  return nullptr;
+  return nullptr; 
 }
 
 int
 main(int /*argc*/, char** /*argv[]*/)
 {
   // Run marker
-  std::atomic<bool> marker{ true };
+  std::atomic<bool> marker{true};
 
   // Killswitch that flips the run marker
   auto killswitch = std::thread([&]() {
