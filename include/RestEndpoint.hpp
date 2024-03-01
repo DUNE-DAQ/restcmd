@@ -43,7 +43,7 @@ public:
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
     , description_{ "DUNE DAQ cmdlib API", "0.1" }
     , accepted_mime_{ MIME(Application, Json) }
-    , http_client_{ std::make_shared<Pistache::Http::Client>() }
+    , http_client_{ std::make_shared<Pistache::Http::Experimental::Client>() }
     , command_callback_{ callback }
   { }
 
@@ -73,8 +73,8 @@ private:
   Pistache::Http::Mime::MediaType accepted_mime_;
 
   // CLIENT
-  std::shared_ptr<Pistache::Http::Client> http_client_;
-  Pistache::Http::Client::Options http_client_options_;
+  std::shared_ptr<Pistache::Http::Experimental::Client> http_client_;
+  Pistache::Http::Experimental::Client::Options http_client_options_;
   std::vector<Pistache::Async::Promise<Pistache::Http::Response>> http_client_responses_;
 
   // Function to call with received POST bodies
