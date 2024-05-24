@@ -8,8 +8,8 @@
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
-#ifndef RESTCMD_SRC_RESTENDPOINT_HPP_ 
-#define RESTCMD_SRC_RESTENDPOINT_HPP_ 
+#ifndef RESTCMD_SRC_RESTENDPOINT_HPP_
+#define RESTCMD_SRC_RESTENDPOINT_HPP_
 
 #include <nlohmann/json.hpp>
 
@@ -35,9 +35,9 @@ namespace restcmd {
 typedef nlohmann::json cmdobj_t;
 
 class RestEndpoint {
-public: 
+public:
   explicit RestEndpoint(const std::string& /*uri*/, int port,
-                        std::function<void(const cmdobj_t&, cmdlib::cmd::CommandReply)> callback) noexcept 
+                        std::function<void(const cmdobj_t&, cmdlib::cmd::CommandReply)> callback) noexcept
     : port_{ static_cast<uint16_t>(port) }
     , address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>( address_ ) }
@@ -54,11 +54,16 @@ public:
 
   // Client handler
   void handleResponseCommand(const cmdobj_t& cmd, cmdlib::cmd::CommandReply& meta);
-  
+  uint16_t getPort() const {
+    return static_cast<uint16_t>(port_);
+  }
+  std::shared_ptr<Pistache::Http::Client> getHttpClient() const {
+    return http_client_;
+  }
 private:
   void createRouting();
   void createDescription();
-  void serveTask(); 
+  //void serveTask();
 
   // Route handler
   void handle_route_command(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response);
@@ -88,4 +93,4 @@ private:
 } // namespace restcmd
 } // namespace dunedaq
 
-#endif // RESTCMD_SRC_RESTENDPOINT_HPP_ 
+#endif // RESTCMD_SRC_RESTENDPOINT_HPP_
