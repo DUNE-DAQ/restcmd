@@ -28,7 +28,7 @@ void RestEndpoint::init(size_t threads)
 
   http_endpoint_->init(opts);
   createRouting();
-  http_client_options_ = Http::Client::options().threads(static_cast<int>(threads));
+  http_client_options_ = Http::Experimental::Client::options().threads(static_cast<int>(threads));
   http_client_->init(http_client_options_);
 }
 
@@ -66,10 +66,9 @@ inline void extendHeader(Http::Header::Collection& headers)
 inline 
 std::string 
 getClientAddress(const Pistache::Rest::Request &request) {
-  const auto xff = request.headers().tryGetRaw("X-Forwarded-For");
-  if (!xff.isEmpty()) {
+  if (const auto xff = request.headers().tryGetRaw("X-Forwarded-For")){
     //TODO: Strip of after first comma (to handle chained proxies).
-    return xff.get().value();
+    return xff->value();
   }
   return request.address().host();
 }
@@ -84,9 +83,11 @@ void RestEndpoint::handle_route_command(const Rest::Request& request, Http::Resp
     auto res = response.send(Http::Code::Not_Acceptable, "Not a JSON command!\n");
   } else {
     auto ansport = headers.getRaw("X-Answer-Port"); // RS: FIXME reply using headers
-    auto anshost = headers.tryGetRaw("X-Answer-Host"); // RS: FIXME reply using headers
     meta.data["ans-port"] = ansport.value();
-    meta.data["ans-host"] = ( !anshost.isEmpty() ? anshost.get().value() : addr.host() );
+    if (auto anshost = headers.tryGetRaw("X-Answer-Host")) // RS: FIXME reply using headers
+        meta.data["ans-host"] = anshost->value();
+    else
+        meta.data["ans-host"] = addr.host();
     command_callback_(nlohmann::json::parse(request.body()), meta); // RS: FIXME parse errors
     auto res = response.send(Http::Code::Accepted, "Command received\n");
   }
@@ -113,7 +114,7 @@ void RestEndpoint::handleResponseCommand(const cmdobj_t& cmd, dunedaq::cmdlib::c
         std::rethrow_exception(exc);
       }
       catch (const std::exception &e) {
-        TLOG() << "Exception thrown by Http::Client::post() call: \"" << e.what() << "\"; errno = " << errno;
+        TLOG() << "Exception thrown by Http::Experimental::Client::post() call: \"" << e.what() << "\"; errno = " << errno;
       }
     }
   );
