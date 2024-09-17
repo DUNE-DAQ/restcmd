@@ -10,11 +10,15 @@
 #include "cmdlib/CommandFacility.hpp"
 #include "cmdlib/Issues.hpp"
 
+#include "iomanager/network/ConfigClient.hpp"
+#include "iomanager/network/ConfigClientStructs.hpp"
+#include "iomanager/connection/Structs.hpp"
+
+#include "utilities/Resolver.hpp"
+
 #include <logging/Logging.hpp>
 #include <cetlib/BasicPluginFactory.h>
 #include <tbb/concurrent_queue.h>
-#include <pistache/client.h>
-#include <pistache/http.h>
 
 #include <fstream>
 #include <string>
@@ -66,9 +70,33 @@ public:
         throw dunedaq::cmdlib::MalformedUri(ERS_HERE, ex.what(), portstr);
       }
 
-      app_discovery_service_ = std::getenv("APP_DISCOVERY_SERVICE");
-      if (port == 0 && !app_discovery_service_) {
-        throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind to port 0 without app discovery service", portstr);
+      char* session = getenv("DUNEDAQ_SESSION");
+      if (session) {
+        m_session = std::string(session);
+      } else {
+        session = getenv("DUNEDAQ_PARTITION");
+        if (session) {
+          m_session = std::string(session);
+        } else {
+          throw(EnvVarNotFound(ERS_HERE, "DUNEDAQ_SESSION"));
+        }
+      }
+
+      char* server_chars = std::getenv("CONNECTION_SERVER");
+      char* port_char    = std::getenv("CONNECTION_PORT");
+      if (server_chars && port_char) {
+        m_connectivity_server = std::string(server_chars);
+        m_connectivity_port   = std::string(port_char);
+
+        m_connectivity_client = std::make_unique<dunedaq::iomanager::ConfigClient>(
+          m_connectivity_server,
+          m_connectivity_port,
+          std::chrono::milliseconds(2_000) // pulling the configuration to get this number here seems a bit overkill
+        );
+      }
+
+      if (port == 0 && !m_connectivity_client) {
+        throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind to port 0 without connectivity service", portstr);
       }
 
       try { // to setup backend
@@ -87,38 +115,30 @@ public:
       // Start endpoint
       try {
         rest_endpoint_->start();
-        int port = rest_endpoint_->getPort();
-        if (app_discovery_service_) {
-            std::ostringstream addrstr;
-            addrstr << app_discovery_service_ << "/app-registry/v0.0.0/app-control-connection";
-            nlohmann::json body_json;
-            std::string session = std::getenv("DUNEDAQ_SESSION");
 
-            char hostname[HOST_NAME_MAX];
-            gethostname(hostname, HOST_NAME_MAX);
-            std::map<std::string,std::string> endpoint_description = {
-                {"name", m_name},
-                {"endpoint", "rest://"+std::string(hostname)+":"+std::to_string(port)}
-            };
-            body_json["session"] = session;
-            body_json["endpoints"] = std::vector<std::map<std::string,std::string>>();
-            body_json["endpoints"].push_back(endpoint_description);
+        if (m_connectivity_client) {
+          int port = rest_endpoint_->getPort();
 
-            auto response = rest_endpoint_->getHttpClient()->post(addrstr.str()).body(body_json.dump()).send();
-            response.then(
-              [&](Pistache::Http::Response response) {
-                TLOG() << "Response code = " << response.code();
-              },
-              [&](std::exception_ptr exc) {
-                // handle response failure
-                try{
-                  std::rethrow_exception(exc);
-                }
-                catch (const std::exception &e) {
-                  TLOG() << "Exception thrown by Http::Client::post() call: \"" << e.what() << "\"; errno = " << errno;
-                }
-              }
-           );
+          char hostname[HOST_NAME_MAX];
+          gethostname(hostname, HOST_NAME_MAX);
+          auto ips = dunedaq::utilities::get_ips_from_hostname(std::string(hostname));
+
+          if (ips.size() == 0)
+            throw dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, "Could not resolve hostname to IP address");
+
+          dunedaq::iomanager::ConnectionRegistration cr;
+          cr.uid =  m_name + "_control";
+          cr.data_type = "json-control-messages";
+          cr.uri = "rest" + ips[0] + ":" + std::to_string(port);
+          cr.connection_type = dunedaq::iomanager::connection::ConnectionType::kSendRecv;
+          // unclear why I can't do the following
+          // dunedaq::iomanager::ConnectionRegistration cr = {
+          //   m_name + "_control",
+          //   "json-control-messages",
+          //   "rest" + ips[0] + ":" + std::to_string(port),
+          //   dunedaq::iomanager::connection::ConnectionType::kSendRecv
+          // };
+          m_connectivity_client->publish(cr);
         }
       }
       catch (const std::exception& ex) {
@@ -132,32 +152,13 @@ public:
 
       // Shutdown
       rest_endpoint_->shutdown();
-      if (app_discovery_service_) {
-        std::ostringstream addrstr;
-        addrstr << app_discovery_service_ << "/app-registry/v0.0.0/app-control-connection";
-        nlohmann::json body_json;
-        std::string session = std::getenv("DUNEDAQ_SESSION");
-
-        char hostname[HOST_NAME_MAX];
-        gethostname(hostname, HOST_NAME_MAX);
-        body_json["session"] = session;
-        body_json["name"] = m_name;
-
-        auto response = rest_endpoint_->getHttpClient()->del(addrstr.str()).body(body_json.dump()).send();
-        response.then(
-          [&](Pistache::Http::Response response) {
-            TLOG() << "Response code = " << response.code();
-          },
-          [&](std::exception_ptr exc) {
-            // handle response failure
-            try{
-              std::rethrow_exception(exc);
-            }
-            catch (const std::exception &e) {
-              TLOG() << "Exception thrown by Http::Client::delete() call: \"" << e.what() << "\"; errno = " << errno;
-            }
-          }
-        );
+      if (m_connectivity_client) {
+        dunedaq::iomanager::connection::ConnectionId ci{
+          m_name + "_control",
+          "json-control-messages",
+          m_session
+        };
+        m_connectivity_client->retract(ci);
       }
 
     }
@@ -176,8 +177,11 @@ private:
 
     typedef std::function<void(const cmdobj_t&, cmd::CommandReply)> RequestCallback;
     RequestCallback command_executor_;
-    const char* app_discovery_service_ = nullptr;
-    std::string app_name_;
+
+    std::string m_session;
+    std::string m_connectivity_port;
+    std::string m_connectivity_server;
+    std::unique_ptr<dunedaq::iomanager::ConfigClient> m_connectivity_client;
 };
 
 extern "C" {
