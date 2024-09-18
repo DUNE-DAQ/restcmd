@@ -91,7 +91,7 @@ public:
         m_connectivity_client = std::make_unique<dunedaq::iomanager::ConfigClient>(
           m_connectivity_server,
           m_connectivity_port,
-          std::chrono::milliseconds(2_000) // pulling the configuration to get this number here seems a bit overkill
+          std::chrono::milliseconds(2000) // pulling the configuration to get this number here seems a bit overkill
         );
       }
 
