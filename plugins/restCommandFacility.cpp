@@ -129,7 +129,7 @@ public:
           dunedaq::iomanager::ConnectionRegistration cr;
           cr.uid =  m_name + "_control";
           cr.data_type = "json-control-messages";
-          cr.uri = "rest" + ips[0] + ":" + std::to_string(port);
+          cr.uri = "rest://" + ips[0] + ":" + std::to_string(port);
           cr.connection_type = dunedaq::iomanager::connection::ConnectionType::kSendRecv;
           // unclear why I can't do the following
           // dunedaq::iomanager::ConnectionRegistration cr = {
