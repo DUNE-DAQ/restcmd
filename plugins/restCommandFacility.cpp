@@ -5,7 +5,7 @@
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
-#include "RestEndpoint.hpp"
+#include "restcmd/RestEndpoint.hpp"
 
 #include "cmdlib/CommandFacility.hpp"
 #include "cmdlib/Issues.hpp"
@@ -38,7 +38,11 @@ public:
     // friend backend for calling functions on CF
     friend class RestEndpoint;
 
-    explicit restCommandFacility(std::string uri) : CommandFacility(uri) {
+    explicit restCommandFacility(
+      std::string uri,
+      int connectivity_service_interval_ms,
+      bool use_connectivity_service) :
+      CommandFacility(uri) {
 
       // Parse URI
       auto col = uri.find_last_of(':');
@@ -71,32 +75,31 @@ public:
       }
 
       char* session = getenv("DUNEDAQ_SESSION");
-      if (session) {
-        m_session = std::string(session);
-      } else {
-        session = getenv("DUNEDAQ_PARTITION");
-        if (session) {
-          m_session = std::string(session);
-        } else {
-          throw(EnvVarNotFound(ERS_HERE, "DUNEDAQ_SESSION"));
-        }
-      }
+      m_session = session ? std::string(session) : "";
 
-      char* server_chars = std::getenv("CONNECTION_SERVER");
-      char* port_char    = std::getenv("CONNECTION_PORT");
-      if (server_chars && port_char) {
+      if (m_session == "")
+        throw(dunedaq::restcmd::EnvVarNotFound(ERS_HERE, "DUNEDAQ_SESSION"));
+
+      if (use_connectivity_service) {
+
+        char* server_chars = std::getenv("CONNECTION_SERVER");
+        char* port_char    = std::getenv("CONNECTION_PORT");
+
+        if (!server_chars || !port_char)
+          throw dunedaq::cmdlib::MissingEnvVar(ERS_HERE, "CONNECTION_SERVER or CONNECTION_PORT");
+
         m_connectivity_server = std::string(server_chars);
         m_connectivity_port   = std::string(port_char);
 
         m_connectivity_client = std::make_unique<dunedaq::iomanager::ConfigClient>(
           m_connectivity_server,
           m_connectivity_port,
-          std::chrono::milliseconds(2000) // pulling the configuration to get this number here seems a bit overkill
+          std::chrono::milliseconds(connectivity_service_interval_ms)
         );
       }
 
-      if (port == 0 && !m_connectivity_client) {
-        throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind to port 0 without connectivity service", portstr);
+      if (port == 0 && !use_connectivity_service) {
+        throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind the REST API to port 0 without connectivity service", portstr);
       }
 
       try { // to setup backend
@@ -128,16 +131,9 @@ public:
 
           dunedaq::iomanager::ConnectionRegistration cr;
           cr.uid =  m_name + "_control";
-          cr.data_type = "json-control-messages";
+          cr.data_type = "RunControlMessage";
           cr.uri = "rest://" + ips[0] + ":" + std::to_string(port);
           cr.connection_type = dunedaq::iomanager::connection::ConnectionType::kSendRecv;
-          // unclear why I can't do the following
-          // dunedaq::iomanager::ConnectionRegistration cr = {
-          //   m_name + "_control",
-          //   "json-control-messages",
-          //   "rest" + ips[0] + ":" + std::to_string(port),
-          //   dunedaq::iomanager::connection::ConnectionType::kSendRecv
-          // };
           m_connectivity_client->publish(cr);
         }
       }
