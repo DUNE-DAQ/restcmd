@@ -5,7 +5,7 @@
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
-#include "RestEndpoint.hpp"
+#include "restcmd/RestEndpoint.hpp"
 
 #include <logging/Logging.hpp>
 
