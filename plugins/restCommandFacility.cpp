@@ -86,7 +86,7 @@ public:
         char* port_char    = std::getenv("CONNECTION_PORT");
 
         if (!server_chars || !port_char)
-          throw dunedaq::cmdlib::MissingEnvVar(ERS_HERE, "CONNECTION_SERVER or CONNECTION_PORT");
+          throw dunedaq::restcmd::EnvVarNotFound(ERS_HERE, "CONNECTION_SERVER or CONNECTION_PORT");
 
         m_connectivity_server = std::string(server_chars);
         m_connectivity_port   = std::string(port_char);
