@@ -181,7 +181,15 @@ private:
 };
 
 extern "C" {
-    std::shared_ptr<dunedaq::cmdlib::CommandFacility> make(std::string uri) {
-        return std::shared_ptr<dunedaq::cmdlib::CommandFacility>(new restCommandFacility(uri));
-    }
+  std::shared_ptr<dunedaq::cmdlib::CommandFacility> make(
+    std::string uri,
+    int connectivity_service_interval_ms,
+    bool use_connectivity_service) {
+
+    return std::shared_ptr<dunedaq::cmdlib::CommandFacility>(new restCommandFacility(
+      uri,
+      connectivity_service_interval_ms,
+      use_connectivity_service)
+    );
+  }
 }
