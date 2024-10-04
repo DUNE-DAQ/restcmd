@@ -23,6 +23,8 @@
 
 #include "cmdlib/cmd/Nljs.hpp"
 
+#include "restcmd/Issues.hpp"
+
 #include <thread>
 #include <chrono>
 #include <future>
