@@ -151,7 +151,7 @@ public:
       if (m_connectivity_client) {
         dunedaq::iomanager::connection::ConnectionId ci{
           m_name + "_control",
-          "json-control-messages",
+          "RunControlMessage",
           m_session
         };
         m_connectivity_client->retract(ci);
