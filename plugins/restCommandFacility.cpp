@@ -129,6 +129,7 @@ public:
           if (ips.size() == 0)
             throw dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, "Could not resolve hostname to IP address");
 
+          TLOG() << "Registering the control endpoint (" << m_name << "_control) on the connectivity service: " << ips[0] << ":" << port;
           dunedaq::iomanager::ConnectionRegistration cr;
           cr.uid =  m_name + "_control";
           cr.data_type = "RunControlMessage";
