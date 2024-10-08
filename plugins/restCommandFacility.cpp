@@ -115,6 +115,12 @@ public:
     }
 
     void run(std::atomic<bool>& end_marker) {
+
+      char* app_name_c = std::getenv("DUNEDAQ_APPLICATION_NAME");
+      if (!app_name_c)
+        throw dunedaq::restcmd::EnvVarNotFound(ERS_HERE, "DUNEDAQ_APPLICATION_NAME");
+      std::string app_name =  std::string(app_name_c);
+
       // Start endpoint
       try {
         rest_endpoint_->start();
@@ -129,9 +135,9 @@ public:
           if (ips.size() == 0)
             throw dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, "Could not resolve hostname to IP address");
 
-          TLOG() << "Registering the control endpoint (" << m_name << "_control) on the connectivity service: " << ips[0] << ":" << port;
+          TLOG() << "Registering the control endpoint (" << app_name << "_control) on the connectivity service: " << ips[0] << ":" << port;
           dunedaq::iomanager::ConnectionRegistration cr;
-          cr.uid =  m_name + "_control";
+          cr.uid =  app_name + "_control";
           cr.data_type = "RunControlMessage";
           cr.uri = "rest://" + ips[0] + ":" + std::to_string(port);
           cr.connection_type = dunedaq::iomanager::connection::ConnectionType::kSendRecv;
@@ -151,7 +157,7 @@ public:
       rest_endpoint_->shutdown();
       if (m_connectivity_client) {
         dunedaq::iomanager::connection::ConnectionId ci{
-          m_name + "_control",
+          app_name + "_control",
           "RunControlMessage",
           m_session
         };
