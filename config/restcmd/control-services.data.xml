@@ -63,20 +63,21 @@
 
 <oks-data>
 
-<info name="" type="" num-of-items="" oks-format="data" oks-version="862f2957270" created-by="plasorak" created-on="" creation-time="20231207T105549" last-modified-by="plasorak" last-modified-on="np04-srv-015.cern.ch" last-modification-time="20240916T092524"/>
+<info name="" type="" num-of-items="2" oks-format="data" oks-version="862f2957270" created-by="plasorak" created-on="" creation-time="20231207T105549" last-modified-by="eflumerf" last-modified-on="ironvirt9.IRONDOMAIN.local" last-modification-time="20241023T204410"/>
 
 <include>
  <file path="schema/confmodel/dunedaq.schema.xml"/>
 </include>
 
-<obj class="Service" id="drunc_controller_control">
-  <attr name="protocol" val="grpc"/>
-  <attr name="port" val="0"/>
-</obj>
 
 <obj class="Service" id="daq_application_control">
-  <attr name="protocol" val="rest"/>
-  <attr name="port" val="0"/>
+ <attr name="protocol" type="string" val="rest"/>
+ <attr name="port" type="u16" val="0"/>
+</obj>
+
+<obj class="Service" id="drunc_controller_control">
+ <attr name="protocol" type="string" val="grpc"/>
+ <attr name="port" type="u16" val="0"/>
 </obj>
 
 </oks-data>
