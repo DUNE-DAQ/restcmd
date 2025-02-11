@@ -12,7 +12,7 @@
 
 #include "cmdlib/CommandedObject.hpp"
 
-#include <logging/Logging.hpp>
+#include "logging/Logging.hpp"
 
 #include <stdexcept>
 #include <string>

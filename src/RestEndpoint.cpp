@@ -7,7 +7,7 @@
  */
 #include "restcmd/RestEndpoint.hpp"
 
-#include <logging/Logging.hpp>
+#include "logging/Logging.hpp"
 
 #include <chrono>
 #include <future>

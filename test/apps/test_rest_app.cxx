@@ -12,7 +12,7 @@
 #include "cmdlib/CommandedObject.hpp"
 #include "rest_commanded_object.hpp"
 
-#include <logging/Logging.hpp>
+#include "logging/Logging.hpp"
 
 #include <string>
 #include <chrono>
