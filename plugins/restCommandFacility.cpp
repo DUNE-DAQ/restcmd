@@ -17,7 +17,7 @@
 #include "utilities/Resolver.hpp"
 
 #include <cetlib/BasicPluginFactory.h>
-#include <logging/Logging.hpp>
+#include "logging/Logging.hpp"
 #include <tbb/concurrent_queue.h>
 
 #include <chrono>
