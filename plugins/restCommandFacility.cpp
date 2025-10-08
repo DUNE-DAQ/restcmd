@@ -98,6 +98,9 @@ public:
     } catch (const std::exception& ex) {
       ers::error(dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, ex.what()));
     }
+
+    // Store hostname for connectivity service registration
+    m_hostname = hostname;
   }
 
   void run(std::atomic<bool>& end_marker)
@@ -115,9 +118,7 @@ public:
       if (m_connectivity_client) {
         int port = rest_endpoint_->getPort();
 
-        char hostname[HOST_NAME_MAX];
-        gethostname(hostname, HOST_NAME_MAX);
-        auto ips = dunedaq::utilities::get_ips_from_hostname(std::string(hostname));
+        auto ips = dunedaq::utilities::get_ips_from_hostname(m_hostname);
 
         if (ips.size() == 0)
           throw dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, "Could not resolve hostname to IP address");
@@ -165,6 +166,7 @@ private:
   RequestCallback command_executor_;
 
   std::string m_session_name;
+  std::string m_hostname;
   std::unique_ptr<dunedaq::iomanager::ConfigClient> m_connectivity_client;
 };
 
