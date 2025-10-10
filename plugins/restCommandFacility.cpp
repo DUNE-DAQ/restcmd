@@ -50,39 +50,10 @@ public:
 
     folly::Uri furi(uri);
 
-    // // Parse URI
-    // auto col = uri.find_last_of(':');
-    // auto at = uri.find('@');
-    // auto sep = uri.find("://");
-    // if (col == std::string::npos || sep == std::string::npos) { // enforce URI
-    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Malformed URI: ", uri);
-    // }
-    // // std::string scheme = uri.substr(0, sep);
-    // std::string iname = uri.substr(sep + 3);
-    // if (iname.empty()) {
-    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Missing interface name in ", uri);
-    // }
-    // std::string portstr = uri.substr(col + 1);
-    // if (portstr.empty() || portstr.find(iname) != std::string::npos) {
-    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind without port in ", uri);
-    // }
-    // std::string epname = uri.substr(sep + 3, at - (sep + 3));
-    // std::string hostname = uri.substr(at + 1, col - (at + 1));
-
-
     std::string hostname = furi.hostname();
     int port = furi.port();
 
-    std::string epname = std::format("{}:{}", hostname, port);
-    // try { // to parse port
-    //   port = std::stoi(portstr);
-    //   if (!(0 <= port && port <= 65535)) { // valid port
-    //     throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Invalid port ", portstr);
-    //   }
-    // } catch (const std::exception& ex) {
-    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, ex.what(), portstr);
-    // }
-
+    std::string epname = ;
     if (connectivity_service != nullptr) {
       auto connectivity_service_port = std::to_string(connectivity_service->get_service()->get_port());
       m_connectivity_client = std::make_unique<dunedaq::iomanager::ConfigClient>(
@@ -101,7 +72,7 @@ public:
       command_executor_ = std::bind(&inherited::execute_command, this, std::placeholders::_1, std::placeholders::_2);
       rest_endpoint_ = std::make_unique<dunedaq::restcmd::RestEndpoint>(hostname, port, command_executor_);
       rest_endpoint_->init(1); // 1 thread
-      TLOG() << "Endpoint open on: " << epname << " host:" << hostname << " port:" << port;
+      TLOG() << std::format("Endpoint open on host: {} port: {}", hostname, port);
 
     } catch (const std::exception& ex) {
       ers::error(dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, ex.what()));
