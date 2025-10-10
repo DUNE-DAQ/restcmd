@@ -80,7 +80,6 @@ public:
 
     // Store hostname for connectivity service registration
     m_hostname = hostname;
-    TLOG() << "AAAAAA Hostname " << m_hostname;
   }
 
   void run(std::atomic<bool>& end_marker)
