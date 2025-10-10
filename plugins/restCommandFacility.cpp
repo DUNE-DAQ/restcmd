@@ -18,7 +18,8 @@
 
 #include <cetlib/BasicPluginFactory.h>
 #include "logging/Logging.hpp"
-#include <tbb/concurrent_queue.h>
+// #include <tbb/concurrent_queue.h>
+#include <folly/Uri.h>
 
 #include <chrono>
 #include <fstream>
@@ -46,34 +47,41 @@ public:
     , m_session_name(session_name)
   {
 
-    // Parse URI
-    auto col = uri.find_last_of(':');
-    auto at = uri.find('@');
-    auto sep = uri.find("://");
-    if (col == std::string::npos || sep == std::string::npos) { // enforce URI
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Malformed URI: ", uri);
-    }
-    std::string scheme = uri.substr(0, sep);
-    std::string iname = uri.substr(sep + 3);
-    if (iname.empty()) {
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Missing interface name in ", uri);
-    }
-    std::string portstr = uri.substr(col + 1);
-    if (portstr.empty() || portstr.find(iname) != std::string::npos) {
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind without port in ", uri);
-    }
-    std::string epname = uri.substr(sep + 3, at - (sep + 3));
-    std::string hostname = uri.substr(at + 1, col - (at + 1));
 
-    int port = -1;
-    try { // to parse port
-      port = std::stoi(portstr);
-      if (!(0 <= port && port <= 65535)) { // valid port
-        throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Invalid port ", portstr);
-      }
-    } catch (const std::exception& ex) {
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, ex.what(), portstr);
-    }
+    folly::Uri furi(uri);
+
+    // // Parse URI
+    // auto col = uri.find_last_of(':');
+    // auto at = uri.find('@');
+    // auto sep = uri.find("://");
+    // if (col == std::string::npos || sep == std::string::npos) { // enforce URI
+    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Malformed URI: ", uri);
+    // }
+    // // std::string scheme = uri.substr(0, sep);
+    // std::string iname = uri.substr(sep + 3);
+    // if (iname.empty()) {
+    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Missing interface name in ", uri);
+    // }
+    // std::string portstr = uri.substr(col + 1);
+    // if (portstr.empty() || portstr.find(iname) != std::string::npos) {
+    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind without port in ", uri);
+    // }
+    // std::string epname = uri.substr(sep + 3, at - (sep + 3));
+    // std::string hostname = uri.substr(at + 1, col - (at + 1));
+
+
+    std::string hostname = furi.hostname();
+    int port = furi.port();
+
+    std::string epname = std::format("{}:{}", hostname, port);
+    // try { // to parse port
+    //   port = std::stoi(portstr);
+    //   if (!(0 <= port && port <= 65535)) { // valid port
+    //     throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Invalid port ", portstr);
+    //   }
+    // } catch (const std::exception& ex) {
+    //   throw dunedaq::cmdlib::MalformedUri(ERS_HERE, ex.what(), portstr);
+    // }
 
     if (connectivity_service != nullptr) {
       auto connectivity_service_port = std::to_string(connectivity_service->get_service()->get_port());
@@ -86,7 +94,7 @@ public:
 
     if (port == 0 && connectivity_service == nullptr) {
       throw dunedaq::cmdlib::MalformedUri(
-        ERS_HERE, "Can't bind the REST API to port 0 without connectivity service", portstr);
+        ERS_HERE, "Can't bind the REST API to port 0 without connectivity service", std::to_string(port));
     }
 
     try { // to setup backend
@@ -101,6 +109,7 @@ public:
 
     // Store hostname for connectivity service registration
     m_hostname = hostname;
+    TLOG() << "AAAAAA Hostname " << m_hostname;
   }
 
   void run(std::atomic<bool>& end_marker)
