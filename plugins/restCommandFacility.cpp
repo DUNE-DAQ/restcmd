@@ -53,7 +53,6 @@ public:
     std::string hostname = furi.hostname();
     int port = furi.port();
 
-    std::string epname = ;
     if (connectivity_service != nullptr) {
       auto connectivity_service_port = std::to_string(connectivity_service->get_service()->get_port());
       m_connectivity_client = std::make_unique<dunedaq::iomanager::ConfigClient>(
