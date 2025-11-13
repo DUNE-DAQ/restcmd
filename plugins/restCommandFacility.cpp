@@ -17,7 +17,8 @@
 
 #include <cetlib/BasicPluginFactory.h>
 #include "logging/Logging.hpp"
-#include <tbb/concurrent_queue.h>
+// #include <tbb/concurrent_queue.h>
+#include <folly/Uri.h>
 
 #include <chrono>
 #include <fstream>
@@ -45,34 +46,11 @@ public:
     , m_session_name(session_name)
   {
 
-    // Parse URI
-    auto col = uri.find_last_of(':');
-    auto at = uri.find('@');
-    auto sep = uri.find("://");
-    if (col == std::string::npos || sep == std::string::npos) { // enforce URI
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Malformed URI: ", uri);
-    }
-    std::string scheme = uri.substr(0, sep);
-    std::string iname = uri.substr(sep + 3);
-    if (iname.empty()) {
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Missing interface name in ", uri);
-    }
-    std::string portstr = uri.substr(col + 1);
-    if (portstr.empty() || portstr.find(iname) != std::string::npos) {
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Can't bind without port in ", uri);
-    }
-    std::string epname = uri.substr(sep + 3, at - (sep + 3));
-    std::string hostname = uri.substr(at + 1, col - (at + 1));
 
-    int port = -1;
-    try { // to parse port
-      port = std::stoi(portstr);
-      if (!(0 <= port && port <= 65535)) { // valid port
-        throw dunedaq::cmdlib::MalformedUri(ERS_HERE, "Invalid port ", portstr);
-      }
-    } catch (const std::exception& ex) {
-      throw dunedaq::cmdlib::MalformedUri(ERS_HERE, ex.what(), portstr);
-    }
+    folly::Uri furi(uri);
+
+    std::string hostname = furi.hostname();
+    int port = furi.port();
 
     if (connectivity_service != nullptr) {
       auto connectivity_service_port = std::to_string(connectivity_service->get_service()->get_port());
@@ -85,18 +63,21 @@ public:
 
     if (port == 0 && connectivity_service == nullptr) {
       throw dunedaq::cmdlib::MalformedUri(
-        ERS_HERE, "Can't bind the REST API to port 0 without connectivity service", portstr);
+        ERS_HERE, "Can't bind the REST API to port 0 without connectivity service", std::to_string(port));
     }
 
     try { // to setup backend
       command_executor_ = std::bind(&inherited::execute_command, this, std::placeholders::_1, std::placeholders::_2);
       rest_endpoint_ = std::make_unique<dunedaq::restcmd::RestEndpoint>(hostname, port, command_executor_);
       rest_endpoint_->init(1); // 1 thread
-      TLOG() << "Endpoint open on: " << epname << " host:" << hostname << " port:" << port;
+      TLOG() << std::format("Endpoint open on host: {} port: {}", hostname, port);
 
     } catch (const std::exception& ex) {
       ers::error(dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, ex.what()));
     }
+
+    // Store hostname for connectivity service registration
+    m_hostname = hostname;
   }
 
   void run(std::atomic<bool>& end_marker)
@@ -114,9 +95,7 @@ public:
       if (m_connectivity_client) {
         int port = rest_endpoint_->getPort();
 
-        char hostname[HOST_NAME_MAX];
-        gethostname(hostname, HOST_NAME_MAX);
-        auto ips = dunedaq::utilities::get_hostname_ips(std::string(hostname));
+        auto ips = dunedaq::utilities::get_hostname_ips(m_hostname);
 
         if (ips.size() == 0)
           throw dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, "Could not resolve hostname to IP address");
@@ -164,6 +143,7 @@ private:
   RequestCallback command_executor_;
 
   std::string m_session_name;
+  std::string m_hostname;
   std::unique_ptr<dunedaq::iomanager::ConfigClient> m_connectivity_client;
 };
 
