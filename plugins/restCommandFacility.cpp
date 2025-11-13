@@ -95,7 +95,7 @@ public:
       if (m_connectivity_client) {
         int port = rest_endpoint_->getPort();
 
-        auto ips = dunedaq::utilities::get_ips_from_hostname(m_hostname);
+        auto ips = dunedaq::utilities::get_hostname_ips(m_hostname);
 
         if (ips.size() == 0)
           throw dunedaq::cmdlib::CommandFacilityInitialization(ERS_HERE, "Could not resolve hostname to IP address");
