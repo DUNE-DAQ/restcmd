@@ -13,8 +13,7 @@
 #include "confmodel/ConnectivityService.hpp"
 #include "iomanager/network/ConfigClient.hpp"
 #include "iomanager/network/ConfigClientStructs.hpp"
-
-#include "utilities/Resolver.hpp"
+#include "utilities/get_ips.hpp"
 
 #include <cetlib/BasicPluginFactory.h>
 #include "logging/Logging.hpp"
