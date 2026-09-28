@@ -15,8 +15,8 @@
 #include "iomanager/network/ConfigClientStructs.hpp"
 #include "utilities/get_ips.hpp"
 
-#include <cetlib/BasicPluginFactory.h>
 #include "logging/Logging.hpp"
+#include <cetlib/BasicPluginFactory.h>
 // #include <tbb/concurrent_queue.h>
 #include <folly/Uri.h>
 
@@ -45,7 +45,6 @@ public:
     : CommandFacility(uri)
     , m_session_name(session_name)
   {
-
 
     folly::Uri furi(uri);
 
@@ -149,8 +148,8 @@ private:
 
 extern "C"
 {
-  std::shared_ptr<dunedaq::cmdlib::CommandFacility> make(std::string uri,
-                                                         std::string session_name, const dunedaq::confmodel::ConnectivityService* connectivity_service)
+  std::shared_ptr<dunedaq::cmdlib::CommandFacility>
+  make(std::string uri, std::string session_name, const dunedaq::confmodel::ConnectivityService* connectivity_service)
   {
 
     return std::shared_ptr<dunedaq::cmdlib::CommandFacility>(
