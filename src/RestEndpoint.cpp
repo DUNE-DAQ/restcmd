@@ -12,6 +12,7 @@
 #include <chrono>
 #include <future>
 #include <sstream>
+#include <string>
 #include <utility>
 
 using namespace dunedaq::restcmd;
@@ -74,7 +75,7 @@ getClientAddress(const Pistache::Rest::Request& request)
 {
   const auto xff = request.headers().tryGetRaw("X-Forwarded-For");
   if (!xff.isEmpty()) {
-    // TODO: Strip of after first comma (to handle chained proxies).
+    // TODO: Strip off after first comma (to handle chained proxies). // NOLINT
     return xff.get().value();
   }
   return request.address().host();

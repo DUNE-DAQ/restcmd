@@ -21,9 +21,9 @@
 #include <folly/Uri.h>
 
 #include <chrono>
+#include <climits>
 #include <fstream>
 #include <functional>
-#include <limits.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -146,6 +146,7 @@ private:
   std::unique_ptr<dunedaq::iomanager::ConfigClient> m_connectivity_client;
 };
 
+// NOLINTBEGIN
 extern "C"
 {
   std::shared_ptr<dunedaq::cmdlib::CommandFacility>
@@ -156,3 +157,4 @@ extern "C"
       new restCommandFacility(uri, session_name, connectivity_service));
   }
 }
+// NOLINTEND
