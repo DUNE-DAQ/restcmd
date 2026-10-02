@@ -8,8 +8,12 @@
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
-#ifndef RESTCMD_SRC_RESTENDPOINT_HPP_
-#define RESTCMD_SRC_RESTENDPOINT_HPP_
+#ifndef RESTCMD_INCLUDE_RESTCMD_RESTENDPOINT_HPP_
+#define RESTCMD_INCLUDE_RESTCMD_RESTENDPOINT_HPP_
+
+#include "restcmd/Issues.hpp"
+
+#include "cmdlib/cmd/Nljs.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -21,18 +25,14 @@
 #include <pistache/mime.h>
 #include <pistache/router.h>
 
-#include "cmdlib/cmd/Nljs.hpp"
-
-#include "restcmd/Issues.hpp"
-
 #include <chrono>
 #include <future>
 #include <memory>
 #include <string>
 #include <thread>
+#include <vector>
 
-namespace dunedaq {
-namespace restcmd {
+namespace dunedaq::restcmd {
 
 typedef nlohmann::json cmdobj_t;
 
@@ -42,7 +42,7 @@ public:
   explicit RestEndpoint(const std::string& /*uri*/,
                         int port,
                         std::function<void(const cmdobj_t&, cmdlib::cmd::CommandReply)> callback) noexcept
-    : port_{ static_cast<uint16_t>(port) }
+    : port_{ static_cast<uint16_t>(port) } // NOLINT(build/unsigned)
     , address_{ Pistache::Ipv4::any(), port_ }
     , http_endpoint_{ std::make_shared<Pistache::Http::Endpoint>(address_) }
     , description_{ "DUNE DAQ cmdlib API", "0.1" }
@@ -59,7 +59,7 @@ public:
 
   // Client handler
   void handleResponseCommand(const cmdobj_t& cmd, cmdlib::cmd::CommandReply& meta);
-  uint16_t getPort() const { return static_cast<uint16_t>(port_); }
+  uint16_t getPort() const { return static_cast<uint16_t>(port_); } // NOLINT(build/unsigned)
   std::shared_ptr<Pistache::Http::Client> getHttpClient() const { return http_client_; }
 
 private:
@@ -90,7 +90,6 @@ private:
   std::thread server_thread_;
 };
 
-} // namespace restcmd
-} // namespace dunedaq
+} // namespace dunedaq::restcmd
 
-#endif // RESTCMD_SRC_RESTENDPOINT_HPP_
+#endif // RESTCMD_INCLUDE_RESTCMD_RESTENDPOINT_HPP_

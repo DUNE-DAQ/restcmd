@@ -7,8 +7,8 @@
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
-#ifndef RESTCMD_TEST_REST_COMMANDED_OBJECT_HPP_
-#define RESTCMD_TEST_REST_COMMANDED_OBJECT_HPP_
+#ifndef RESTCMD_TEST_APPS_REST_COMMANDED_OBJECT_HPP_
+#define RESTCMD_TEST_APPS_REST_COMMANDED_OBJECT_HPP_
 
 #include "cmdlib/CommandedObject.hpp"
 
@@ -23,6 +23,7 @@ struct RestCommandedObject : public dunedaq::cmdlib::CommandedObject
   std::atomic<bool>& runmarker_;
   std::thread stats_;
 
+  // NOLINTNEXTLINE(runtime/increment_decrement)
   void execute(const dunedaq::cmdlib::cmdobj_t& /*command*/) { ++counter_; }
 
   explicit RestCommandedObject(std::atomic<bool>& rm)
@@ -49,4 +50,4 @@ struct RestCommandedObject : public dunedaq::cmdlib::CommandedObject
   RestCommandedObject& operator=(RestCommandedObject&&) = delete; ///< RestCommandedObject is not move-assignable
 };
 
-#endif // RESTCMD_TEST_REST_COMMANDED_OBJECT_HPP_
+#endif // RESTCMD_TEST_APPS_REST_COMMANDED_OBJECT_HPP_

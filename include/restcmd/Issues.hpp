@@ -20,6 +20,6 @@ namespace dunedaq {
 
 ERS_DECLARE_ISSUE(restcmd, EnvVarNotFound, "The environment variable wasn't set " << env_var, ((std::string)env_var))
 
-}
+} // namespace dunedaq
 
 #endif // RESTCMD_INCLUDE_RESTCMD_ISSUES_HPP_
